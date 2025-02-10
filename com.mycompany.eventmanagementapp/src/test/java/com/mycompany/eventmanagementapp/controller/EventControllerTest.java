@@ -4,6 +4,7 @@ package com.mycompany.eventmanagementapp.controller;
 import com.mycompany.eventmanagementapp.model.*;
 import com.mycompany.eventmanagementapp.repository.EventRepository;
 import com.mycompany.eventmanagementapp.view.EventManagementView;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,12 +36,13 @@ public class EventControllerTest {
 	private EventController eventController;
 
 	private AutoCloseable closeable;
-	
+
 	public static final long EVENT_ID = 1;
-    public static final String EVENT_NAME = "Music Festival";
-    public static final LocalDate EVENT_DATE = LocalDate.of(2026, 10, 5);
-    public static final LocalDate EVENT_PAST_DATE = LocalDate.of(2022, 10, 5);
-    public static final String EVENT_LOCATION = "Florence";
+	public static final String EVENT_NAME = "Music Festival";
+	public static final LocalDate EVENT_DATE = LocalDate.of(2026, 10, 5);
+	public static final LocalDate EVENT_PAST_DATE = LocalDate.of(2022, 10, 5);
+	public static final LocalDate EVENT_UPDATED_DATE = LocalDate.of(2027, 10, 5);
+	public static final String EVENT_LOCATION = "Florence";
 
 	@Before
 	public void setup() {
@@ -137,8 +139,8 @@ public class EventControllerTest {
 		verify(eventManagementView).showError("Date is required and cannot be null", newEvent);
 		verifyNoMoreInteractions(ignoreStubs(eventRepository));
 	}
-	
-	//Delete Event Test Cases
+
+	// Delete Event Test Cases
 	// Test case for deleting an event when it exists
 	@Test
 	public void testDeleteEventWhenExist() {
@@ -165,14 +167,116 @@ public class EventControllerTest {
 	public void testDeleteEventWhenHasParticipants() {
 		EventModel deleteEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
 		// Create participant
-        ParticipantModel participant = new ParticipantModel(1, "John", "john@gmail.com");
-        // Initialize a set of participants
-        Set<ParticipantModel> participants = new HashSet<>();
-        participants.add(participant);
+		ParticipantModel participant = new ParticipantModel(1, "John", "john@gmail.com");
+		// Initialize a set of participants
+		Set<ParticipantModel> participants = new HashSet<>();
+		participants.add(participant);
 		deleteEvent.setParticipants(participants);
 		when(eventRepository.getEventById(EVENT_ID)).thenReturn(deleteEvent);
 		eventController.deleteEvent(deleteEvent);
-		verify(eventManagementView).showError("Event cannot be deleted. Participants are associated with it", deleteEvent);
+		verify(eventManagementView).showError("Event cannot be deleted. Participants are associated with it",
+				deleteEvent);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+	}
+
+	// Update Event Test Cases
+	// Test case for updating an event name
+	@Test
+	public void testUpdateEventNameWhenExist() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, EVENT_NAME + " Updated", EVENT_DATE, EVENT_LOCATION);
+		EventModel existingEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		when(eventRepository.getEventById(EVENT_ID)).thenReturn(existingEvent);
+		eventController.updateEvent(updatedEvent);
+		InOrder inOrder = inOrder(eventRepository, eventManagementView);
+		inOrder.verify(eventRepository).updateEvent(updatedEvent);
+		inOrder.verify(eventManagementView).eventUpdated(updatedEvent);
+	}
+
+	// Test case for updating an event location
+	@Test
+	public void testUpdateEventLocationWhenExist() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION + " Updated");
+		EventModel existingEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		when(eventRepository.getEventById(EVENT_ID)).thenReturn(existingEvent);
+		eventController.updateEvent(updatedEvent);
+		InOrder inOrder = inOrder(eventRepository, eventManagementView);
+		inOrder.verify(eventRepository).updateEvent(updatedEvent);
+		inOrder.verify(eventManagementView).eventUpdated(updatedEvent);
+	}
+
+	// Test case for updating an event location
+	@Test
+	public void testUpdateEventDateWhenExist() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_UPDATED_DATE, EVENT_LOCATION);
+		EventModel existingEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		when(eventRepository.getEventById(EVENT_ID)).thenReturn(existingEvent);
+		eventController.updateEvent(updatedEvent);
+		InOrder inOrder = inOrder(eventRepository, eventManagementView);
+		inOrder.verify(eventRepository).updateEvent(updatedEvent);
+		inOrder.verify(eventManagementView).eventUpdated(updatedEvent);
+	}
+
+	// Test case for updating an event when it does not exist
+	@Test
+	public void testUpdateEventWhenDoesNotExist() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_UPDATED_DATE, EVENT_LOCATION);
+		when(eventRepository.getEventById(EVENT_ID)).thenReturn(null);
+		eventController.updateEvent(updatedEvent);
+		verify(eventManagementView).showError("Event doesn't exist with id " + EVENT_ID, updatedEvent);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+	}
+
+	// Test case for updating a new event when the name is empty
+	@Test
+	public void testUpdateEventWhenNameIsEmpty() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, "", EVENT_DATE, EVENT_LOCATION);
+		eventController.updateEvent(updatedEvent);
+		verify(eventManagementView).showError("Name is required and cannot be null or empty", updatedEvent);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+	}
+
+	// Test case for updating a new event when the name is null
+	@Test
+	public void testUpdateEventWhenNameIsNull() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, null, EVENT_DATE, EVENT_LOCATION);
+		eventController.updateEvent(updatedEvent);
+		verify(eventManagementView).showError("Name is required and cannot be null or empty", updatedEvent);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+	}
+
+	// Test case for updating a new event when the location is empty
+	@Test
+	public void testUpdateEventWhenLocationIsEmpty() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, "");
+		eventController.updateEvent(updatedEvent);
+		verify(eventManagementView).showError("Location is required and cannot be null or empty", updatedEvent);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+	}
+
+	// Test case for updating a new event when the location is null
+	@Test
+	public void testUpdateEventWhenLocationIsNull() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, null);
+		eventController.updateEvent(updatedEvent);
+		verify(eventManagementView).showError("Location is required and cannot be null or empty", updatedEvent);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+	}
+
+	// Test case for updating a new event when the Date is in past
+	@Test
+	public void testUpdateEventWhenDateIsInPast() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_PAST_DATE, EVENT_LOCATION);
+		eventController.updateEvent(updatedEvent);
+		verify(eventManagementView).showError("Date cannot be in the past", updatedEvent);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+	}
+
+	// Test case for updating a new event when the Date is null
+	@Test
+	public void testUpdateEventWhenDateIsNull() {
+		EventModel updatedEvent = new EventModel(EVENT_ID, EVENT_NAME, null, EVENT_LOCATION);
+		eventController.updateEvent(updatedEvent);
+		verify(eventManagementView).showError("Date is required and cannot be null", updatedEvent);
 		verifyNoMoreInteractions(ignoreStubs(eventRepository));
 	}
 }

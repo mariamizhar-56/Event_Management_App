@@ -50,6 +50,30 @@ public class EventController {
 		LOGGER.info("New event added successfully: {}", event);
 	}
 
+	public synchronized void updateEvent(EventModel event) {
+		LOGGER.info("Updating existing event: {}", event);
+
+		// Validate the event input
+		if (!validateEvent(event)) {
+			LOGGER.warn("Event validation failed: {}", event);
+			return;
+		}
+
+		// Check if the event exists by Id
+		EventModel existingEvent = eventRepository.getEventById((event.getEventId()));
+		if (existingEvent == null) {
+			LOGGER.warn("Event with id {} does not exist", event.getEventId());
+			eventManagementView.showError("Event doesn't exist with id " + event.getEventId(), event);
+			return;
+		}
+
+		// Update the event and notify the view
+		event.setParticipants(existingEvent.getParticipants());
+		eventRepository.updateEvent(event);
+		eventManagementView.eventUpdated(event);
+		LOGGER.info("Event updated successfully: {}", event);
+	}
+
 	public synchronized void deleteEvent(EventModel event) {
 		LOGGER.info("Deleting event : {}", event);
 
