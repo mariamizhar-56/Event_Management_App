@@ -50,6 +50,31 @@ public class EventController {
 		LOGGER.info("New event added successfully: {}", event);
 	}
 
+	public synchronized void deleteEvent(EventModel event) {
+		LOGGER.info("Deleting event : {}", event);
+
+		// Check if the event exists
+		EventModel existingEvent = eventRepository.getEventById((event.getEventId()));
+		if (existingEvent == null) {
+			LOGGER.warn("Event with id {} does not exist", event.getEventId());
+			eventManagementView.showError("Event doesn't exist with id " + event.getEventId(), event);
+			return;
+		}
+
+		// Check if the event has associated participants, which would prevent deletion
+		if (!event.getParticipants().isEmpty()) {
+			LOGGER.warn("Event with id {} cannot be deleted because it has associated participants",
+					event.getEventId());
+			eventManagementView.showError("Event cannot be deleted. Participants are associated with it", event);
+			return;
+		}
+
+		// Delete the event if it doesn't have any participants in it.
+		eventRepository.deleteEvent(event);
+		eventManagementView.eventDeleted(event);
+		LOGGER.info("Event deleted successfully: {}", event);
+	}
+
 	private boolean validateEvent(EventModel event) {
 		LOGGER.debug("Validating event: {}", event);
 
