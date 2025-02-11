@@ -18,7 +18,9 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
@@ -37,6 +39,7 @@ public class ParticipantControllerTest {
 	private ParticipantController participantController;
 
 	public static final long EVENT_ID = 1;
+	public static final long EVENT_ID_2 = 2;
 	public static final String EVENT_NAME = "Music Festival";
 	public static final LocalDate EVENT_DATE = LocalDate.of(2026, 10, 5);
 	public static final String EVENT_LOCATION = "Florence";
@@ -209,15 +212,112 @@ public class ParticipantControllerTest {
 		verifyNoMoreInteractions(ignoreStubs(participantRepository));
 		verifyNoMoreInteractions(participantManagementView);
 	}
-	
-	// Test case for adding a adding participant to event when the email format is invalid
-		@Test
-		public void testAddParticipantWhenEmailFormatIsInvalid() {
-			EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
-			ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_INVALID_EMAIL);
-			participantController.addParticipant(participant, selectedEvent);
-			verify(participantManagementView).showError("Invalid email format.", participant);
-			verifyNoMoreInteractions(ignoreStubs(participantRepository));
-			verifyNoMoreInteractions(participantManagementView);
-		}
+
+	// Test case for adding a adding participant to event when the email format is
+	// invalid
+	@Test
+	public void testAddParticipantWhenEmailFormatIsInvalid() {
+		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME,
+				PARTICIPANT_INVALID_EMAIL);
+		participantController.addParticipant(participant, selectedEvent);
+		verify(participantManagementView).showError("Invalid email format.", participant);
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Delete Event Test Cases
+	// Test case for deleting a participant when participant is null
+	@Test
+	public void testDeleteParticipantWhenParticipantIsNull() {
+		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		ParticipantModel participant = null;
+		participantController.deleteParticipant(participant, selectedEvent);
+		verify(participantManagementView).showError("Selected event or participant is null", participant);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for deleting a participant when selected event is null
+	@Test
+	public void testDeleteParticipantWhenEventIsNull() {
+		EventModel selectedEvent = null;
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
+		participantController.deleteParticipant(participant, selectedEvent);
+		verify(participantManagementView).showError("Selected event or participant is null", participant);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for deleting a participant when it does not exist
+	@Test
+	public void testDeleteParticipantWhenDoesNotExist() {
+		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
+		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(null);
+		participantController.deleteParticipant(participant, selectedEvent);
+		verify(participantManagementView).showError("Participant doesn't exist with email " + PARTICIPANT_EMAIL,
+				participant);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for deleting a participant from event when it is not associated
+	// with selected event
+	@Test
+	public void testDeleteParticipantWhenDoesNotAssociatedWithSelectedEvent() {
+		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
+		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(participant);
+		participantController.deleteParticipant(participant, selectedEvent);
+		verify(participantManagementView).showError("Participant with email " + PARTICIPANT_EMAIL
+				+ " is not associated with event Id " + selectedEvent.getEventId(), participant);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for deleting a participant from event when it is associated
+	// with selected event and apart from that it has no more associated
+	// events left.
+	@Test
+	public void testDeleteParticipantWhenItHasSelectedEventAssociatedButNoMoreAssociatedEventsLeft() {
+		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
+		participant.addEvent(selectedEvent);
+		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(participant);
+		participantController.deleteParticipant(participant, selectedEvent);
+		InOrder inOrder = inOrder(eventRepository, participantRepository, participantManagementView);
+		inOrder.verify(participantRepository).updateParticipant(participant);
+		inOrder.verify(eventRepository).updateEvent(selectedEvent);
+		inOrder.verify(participantRepository).deleteParticipant(participant);
+		inOrder.verify(participantManagementView).participantDeleted(participant);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for deleting a participant from event when it is associated
+	// with selected event and apart from that it has more associated
+	// events left.
+	@Test
+	public void testDeleteParticipantWhenItHasSelectedEventAssociatedAndHasMoreAssociatedEventsLeft() {
+		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		EventModel AdditionalEvent = new EventModel(EVENT_ID_2, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
+		participant.addEvent(selectedEvent);
+		participant.addEvent(AdditionalEvent);
+		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(participant);
+		participantController.deleteParticipant(participant, selectedEvent);
+		InOrder inOrder = inOrder(eventRepository, participantRepository, participantManagementView);
+		inOrder.verify(participantRepository).updateParticipant(participant);
+		inOrder.verify(eventRepository).updateEvent(selectedEvent);
+		inOrder.verify(participantManagementView).participantUpdated(participant);
+		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
 }

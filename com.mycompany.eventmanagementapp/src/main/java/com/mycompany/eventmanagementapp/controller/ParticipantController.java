@@ -59,7 +59,8 @@ public class ParticipantController {
 		EventModel existingEvent = eventRepository.getEventById((selectedEvent.getEventId()));
 		if (existingEvent == null) {
 			LOGGER.warn("Event with id {} does not exist", selectedEvent.getEventId());
-			participantManagementView.showError("Event doesn't exist with id " + selectedEvent.getEventId(), participant);
+			participantManagementView.showError("Event doesn't exist with id " + selectedEvent.getEventId(),
+					participant);
 			return;
 		}
 
@@ -98,6 +99,51 @@ public class ParticipantController {
 		LOGGER.info("New Participant added and associated with event successfully: {}", participant);
 	}
 
+	public synchronized void deleteParticipant(ParticipantModel participant, EventModel selectedEvent) {
+		LOGGER.info("Deleting participant : {}", participant);
+
+		// Check for null values to avoid null pointer exceptions
+		if (selectedEvent == null || participant == null) {
+			LOGGER.error("Selected event or participant is null");
+			participantManagementView.showError("Selected event or participant is null", participant);
+			return;
+		}
+
+		// Ensure participant exists before deleting
+		ParticipantModel existingParticipant = participantRepository
+				.getParticipantByEmail(participant.getParticipantEmail());
+		if (existingParticipant == null) {
+			LOGGER.warn("Participant with email {} doesn't exists", participant.getParticipantEmail());
+			participantManagementView.showError(
+					"Participant doesn't exist with email " + participant.getParticipantEmail(), participant);
+			return;
+		}
+		// if Participant exist then check if selected event is associated with it or
+		// not. If not then show error
+		if (!existingParticipant.getEvents().contains(selectedEvent)) {
+			LOGGER.warn("Participant with email {} doesn't associated with event Id {}",
+					existingParticipant.getParticipantEmail(), selectedEvent.getEventId());
+			participantManagementView.showError("Participant with email " + existingParticipant.getParticipantEmail()
+					+ " is not associated with event Id " + selectedEvent.getEventId(), existingParticipant);
+			return;
+		}
+		// If selected Event is associated with participant then remove that association
+		existingParticipant.removeEvent(selectedEvent);
+		participantRepository.updateParticipant(existingParticipant);
+		eventRepository.updateEvent(selectedEvent);
+
+		// Now check if there are no more association left then delete the Participant
+		// from table
+		if (existingParticipant.getEvents().isEmpty()) {
+			participantRepository.deleteParticipant(existingParticipant);
+			participantManagementView.participantDeleted(existingParticipant);
+			LOGGER.info("Participant deleted successfully: {}", existingParticipant);
+			return;
+		} else {
+			participantManagementView.participantUpdated(existingParticipant);
+			LOGGER.info("Participant association with selected event removed successfully: {}", existingParticipant);
+		}
+	}
 
 	private boolean validateParticipant(ParticipantModel participant) {
 		LOGGER.debug("Validating participant: {}", participant);
