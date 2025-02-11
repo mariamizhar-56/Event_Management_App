@@ -57,17 +57,17 @@ public class EventControllerTest {
 	// Test case for fetching all events
 	@Test
 	public void testAllEvents() {
-		List<EventModel> event = Arrays.asList(new EventModel());
-		when(eventRepository.getAllEvents()).thenReturn(event);
+		List<EventModel> events = Arrays.asList(new EventModel());
+		when(eventRepository.getAllEvents()).thenReturn(events);
 		eventController.getAllEvents();
-		verify(eventManagementView).showAllEvents(event);
+		verify(eventManagementView).showAllEvents(events);
 	}
 
 	// AddEvent function Test Cases
 	// Test case for adding a new event when it doesn't already exist
 	@Test
 	public void testAddEventWhenEventDoesNotAlreadyExist() {
-		EventModel event = new EventModel(EVENT_ID, "Music Festival", LocalDate.of(2026, 10, 5), "Florence");
+		EventModel event = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
 		when(eventRepository.getEventById(EVENT_ID)).thenReturn(null);
 		eventController.addEvent(event);
 		InOrder inOrder = inOrder(eventRepository, eventManagementView);
