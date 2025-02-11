@@ -79,6 +79,7 @@ public class ParticipantControllerTest {
 		verify(participantManagementView).showAllParticipants(participants);
 	}
 
+	// Add Participant Test Cases
 	// Test case for adding a participant when participant is null
 	@Test
 	public void testAddParticipantWhenParticipantIsNull() {
@@ -122,13 +123,33 @@ public class ParticipantControllerTest {
 	public void testAddParticipantToEventWhenParticipantWithEmailDoesNotExist() {
 		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
+
+		// Create a spy on the participant object to track addEvent call
+		ParticipantModel spyParticipant = spy(participant);
+
 		when(eventRepository.getEventById(EVENT_ID)).thenReturn(selectedEvent);
 		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(null);
-		participantController.addParticipant(participant, selectedEvent);
+
+		// Call the addParticipant method
+		participantController.addParticipant(spyParticipant, selectedEvent);
+
+		// Create an inOrder verification to ensure methods are called in the correct
+		// order
 		InOrder inOrder = inOrder(eventRepository, participantRepository, participantManagementView);
-		inOrder.verify(participantRepository).addParticipant(participant);
+
+		// Verify the addParticipant method is called on the repository
+		inOrder.verify(participantRepository).addParticipant(spyParticipant);
+
+		// Verify the updateEvent method is called on the repository
 		inOrder.verify(eventRepository).updateEvent(selectedEvent);
-		inOrder.verify(participantManagementView).participantAdded(participant);
+
+		// Verify the participantAdded method is called in the view
+		inOrder.verify(participantManagementView).participantAdded(spyParticipant);
+
+		// Verify that addEvent was called on the participant with the existingEvent
+		verify(spyParticipant).addEvent(selectedEvent);
+
+		// Verify no more interactions with the repositories or the view
 		verifyNoMoreInteractions(ignoreStubs(eventRepository));
 		verifyNoMoreInteractions(ignoreStubs(participantRepository));
 		verifyNoMoreInteractions(participantManagementView);
@@ -155,23 +176,44 @@ public class ParticipantControllerTest {
 	// associated with selected event.
 	@Test
 	public void testAddParticipantToEventWhenParticipantWithEmailExistButNotAssociatedWithSelectedEvent() {
-		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
-		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
-		when(eventRepository.getEventById(EVENT_ID)).thenReturn(selectedEvent);
-		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(participant);
-		participantController.addParticipant(participant, selectedEvent);
-		InOrder inOrder = inOrder(eventRepository, participantRepository, participantManagementView);
-		inOrder.verify(participantRepository).updateParticipant(participant);
-		inOrder.verify(eventRepository).updateEvent(selectedEvent);
-		inOrder.verify(participantManagementView).participantUpdated(participant);
-		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+	    EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+	    ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
+	    
+	    // Create a spy on the participant object to track addEvent call
+	    ParticipantModel spyParticipant = spy(participant);
+
+	    // Mock the behavior of the repository to return the participant
+	    when(eventRepository.getEventById(EVENT_ID)).thenReturn(selectedEvent);
+	    when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(spyParticipant);
+
+	    // Call the addParticipant method
+	    participantController.addParticipant(spyParticipant, selectedEvent);
+
+	    // Create an inOrder verification to ensure methods are called in the correct order
+	    InOrder inOrder = inOrder(eventRepository, participantRepository, participantManagementView);
+	    
+	    // Verify that the updateParticipant method is called on the repository
+	    inOrder.verify(participantRepository).updateParticipant(spyParticipant);
+	    
+	    // Verify that the updateEvent method is called on the repository
+	    inOrder.verify(eventRepository).updateEvent(selectedEvent);
+	    
+	    // Verify that the participantUpdated method is called in the view
+	    inOrder.verify(participantManagementView).participantUpdated(spyParticipant);
+
+	    // Verify that addEvent was called on the participant with the selectedEvent
+	    verify(spyParticipant).addEvent(selectedEvent);
+
+	    // Verify no more interactions with the repositories or the view
+	    verifyNoMoreInteractions(ignoreStubs(eventRepository));
 		verifyNoMoreInteractions(ignoreStubs(participantRepository));
 		verifyNoMoreInteractions(participantManagementView);
 	}
 
-	// Test case for adding a adding participant to event when the name is null
+
+	// Test case for adding a participant to event when the name is null
 	@Test
-	public void testAddEventWhenNameIsNull() {
+	public void testAddParticipantWhenNameIsNull() {
 		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, null, PARTICIPANT_EMAIL);
 		participantController.addParticipant(participant, selectedEvent);
@@ -180,7 +222,7 @@ public class ParticipantControllerTest {
 		verifyNoMoreInteractions(participantManagementView);
 	}
 
-	// Test case for adding a adding participant to event when the name is empty
+	// Test case for adding a participant to event when the name is empty
 	@Test
 	public void testAddParticipantWhenNameIsEmpty() {
 		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
@@ -191,9 +233,9 @@ public class ParticipantControllerTest {
 		verifyNoMoreInteractions(participantManagementView);
 	}
 
-	// Test case for adding a adding participant to event when the email is null
+	// Test case for adding a participant to event when the email is null
 	@Test
-	public void testAddEventWhenEmailIsNull() {
+	public void testAddParticipantWhenEmailIsNull() {
 		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, null);
 		participantController.addParticipant(participant, selectedEvent);
@@ -202,7 +244,7 @@ public class ParticipantControllerTest {
 		verifyNoMoreInteractions(participantManagementView);
 	}
 
-	// Test case for adding a adding participant to event when the email is empty
+	// Test case for adding participant to event when the email is empty
 	@Test
 	public void testAddParticipantWhenEmailIsEmpty() {
 		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
@@ -213,7 +255,7 @@ public class ParticipantControllerTest {
 		verifyNoMoreInteractions(participantManagementView);
 	}
 
-	// Test case for adding a adding participant to event when the email format is
+	// Test case for adding a participant to event when the email format is
 	// invalid
 	@Test
 	public void testAddParticipantWhenEmailFormatIsInvalid() {
@@ -226,7 +268,7 @@ public class ParticipantControllerTest {
 		verifyNoMoreInteractions(participantManagementView);
 	}
 
-	// Delete Event Test Cases
+	// Delete Participant Test Cases
 	// Test case for deleting a participant when participant is null
 	@Test
 	public void testDeleteParticipantWhenParticipantIsNull() {
@@ -317,6 +359,93 @@ public class ParticipantControllerTest {
 		inOrder.verify(eventRepository).updateEvent(selectedEvent);
 		inOrder.verify(participantManagementView).participantUpdated(participant);
 		verifyNoMoreInteractions(ignoreStubs(eventRepository));
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Update Participant Test Cases
+	// Test case for updating a participant when participant is null
+	@Test
+	public void testUpdateParticipantWhenParticipantIsNull() {
+		ParticipantModel participant = null;
+		participantController.updateParticipant(participant);
+		verify(participantManagementView).showError("Participant is null", participant);
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for updating a participant when it does not exist
+	@Test
+	public void testUpdateParticipantWhenDoesNotExist() {
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
+		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(null);
+		participantController.updateParticipant(participant);
+		verify(participantManagementView).showError("Participant doesn't exist with email " + PARTICIPANT_EMAIL,
+				participant);
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for updating a Participant when participant existed
+	@Test
+	public void testUpdateParticipantWhenExist() {
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
+		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(participant);
+		participantController.updateParticipant(participant);
+		InOrder inOrder = inOrder(participantRepository, participantManagementView);
+		inOrder.verify(participantRepository).updateParticipant(participant);
+		inOrder.verify(participantManagementView).participantUpdated(participant);
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for updating participant when the name is null
+	@Test
+	public void testUpdateParticipantWhenNameIsNull() {
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, null, PARTICIPANT_EMAIL);
+		participantController.updateParticipant(participant);
+		verify(participantManagementView).showError("Name is required and cannot be null or empty", participant);
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for updating a participant when name is empty
+	@Test
+	public void testUpdateParticipantWhenNameIsEmpty() {
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, "", PARTICIPANT_EMAIL);
+		participantController.updateParticipant(participant);
+		verify(participantManagementView).showError("Name is required and cannot be null or empty", participant);
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for updating a participant when email is null
+	@Test
+	public void testUpdateParticipantWhenEmailIsNull() {
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, null);
+		participantController.updateParticipant(participant);
+		verify(participantManagementView).showError("Email cannot be null or empty", participant);
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for updating a participant when email is empty
+	@Test
+	public void testUpdateParticipantWhenEmailIsEmpty() {
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, "");
+		participantController.updateParticipant(participant);
+		verify(participantManagementView).showError("Email cannot be null or empty", participant);
+		verifyNoMoreInteractions(ignoreStubs(participantRepository));
+		verifyNoMoreInteractions(participantManagementView);
+	}
+
+	// Test case for updating a participant when email format is invalid
+	@Test
+	public void testUpdateParticipantWhenEmailFormatIsInvalid() {
+		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME,
+				PARTICIPANT_INVALID_EMAIL);
+		participantController.updateParticipant(participant);
+		verify(participantManagementView).showError("Invalid email format.", participant);
 		verifyNoMoreInteractions(ignoreStubs(participantRepository));
 		verifyNoMoreInteractions(participantManagementView);
 	}

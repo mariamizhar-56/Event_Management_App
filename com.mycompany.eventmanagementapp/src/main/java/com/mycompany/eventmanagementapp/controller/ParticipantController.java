@@ -99,6 +99,38 @@ public class ParticipantController {
 		LOGGER.info("New Participant added and associated with event successfully: {}", participant);
 	}
 
+	public synchronized void updateParticipant(ParticipantModel participant) {
+		LOGGER.info("Updating participant: {}", participant);
+
+		// Check for null values to avoid null pointer exceptions
+		if (participant == null) {
+			LOGGER.error("participant is null");
+			participantManagementView.showError("Participant is null", participant);
+			return;
+		}
+
+		// Validate the participant input
+		if (!validateParticipant(participant)) {
+			LOGGER.warn("Event validation failed: {}", participant);
+			return;
+		}
+
+		// Ensure participant exists before updating
+		ParticipantModel existingParticipant = participantRepository
+				.getParticipantByEmail(participant.getParticipantEmail());
+		if (existingParticipant == null) {
+			LOGGER.warn("Participant with email {} doesn't exists", participant.getParticipantEmail());
+			participantManagementView.showError(
+					"Participant doesn't exist with email " + participant.getParticipantEmail(), participant);
+			return;
+		}
+
+		// Update participant
+		participantRepository.updateParticipant(participant);
+		participantManagementView.participantUpdated(participant);
+		LOGGER.info("Participant updated successfully: {}", participant);
+	}
+
 	public synchronized void deleteParticipant(ParticipantModel participant, EventModel selectedEvent) {
 		LOGGER.info("Deleting participant : {}", participant);
 
