@@ -1,188 +1,317 @@
 package com.mycompany.eventmanagementapp.view.screen;
 
-import java.awt.EventQueue;
+import com.mycompany.eventmanagementapp.controller.EventController;
+import com.mycompany.eventmanagementapp.controller.ParticipantController;
+import com.mycompany.eventmanagementapp.model.EventModel;
+import com.mycompany.eventmanagementapp.model.ParticipantModel;
+import com.mycompany.eventmanagementapp.view.ParticipantManagementView;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
-import javax.swing.JTextField;
-import java.awt.Insets;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.ListSelectionModel;
-import javax.swing.JScrollPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.util.List;
+import java.util.regex.Pattern;
 
-public class ParticipantManagementViewScreen extends JFrame {
+public class ParticipantManagementViewScreen extends JFrame implements ParticipantManagementView {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_eventId; // Add a field for Event ID
-	private JButton AddButton;
-	private JButton UpdateButton;
-	private JList list;
-	private JButton btnNewButton_1;
-	private JLabel lblNewLabel_2;
-	private JLabel lblNewLabel_3;
-	private JLabel lblNewLabel_4;
-	private JScrollPane scrollPane;
+	private JTextField txtParticipantId, txtParticipantName, txtParticipantEmail, txtEventId;
+	private JButton btnAddParticipant, btnUpdateParticipant, btnDeleteParticipant, btnEventScreen;
+	private JList<ParticipantModel> participantList;
+	private DefaultListModel<ParticipantModel> participantListModel;
+	private JList<EventModel> eventListForParticipant;
+	private DefaultListModel<EventModel> eventListModel;
+	private JTextArea lblError;
+	private ParticipantController participantController;
+	private EventManagementViewScreen eventManagementView;
+	
+	public void setParticipantController(ParticipantController participantController) {
+		this.participantController = participantController;
+	}
+	public ParticipantController getParticipantController() {
+		return this.participantController;
+	}
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ParticipantManagementViewScreen frame = new ParticipantManagementViewScreen();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+	public ParticipantManagementViewScreen() {
+		setTitle("Participant Management Screen");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 700, 500);
+		setResizable(false);
+
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(5, 5, 5, 5);
+
+		// **Participant Input Fields**
+		JPanel inputPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+		txtParticipantId = new JTextField();
+		txtParticipantId.setEditable(false);
+		txtEventId = new JTextField();
+		txtParticipantName = new JTextField();
+		txtParticipantEmail = new JTextField();
+
+		inputPanel.add(new JLabel("Participant ID:"));
+		inputPanel.add(txtParticipantId);
+		inputPanel.add(new JLabel("Event ID:"));
+		inputPanel.add(txtEventId);
+		inputPanel.add(new JLabel("Participant Name:"));
+		inputPanel.add(txtParticipantName);
+		inputPanel.add(new JLabel("Participant Email:"));
+		inputPanel.add(txtParticipantEmail);
+
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = 2;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		contentPane.add(inputPanel, gbc);
+
+		// **Participant List**
+		participantListModel = new DefaultListModel<>();
+		participantList = new JList<>(participantListModel);
+		participantList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JScrollPane participantScrollPane = new JScrollPane(participantList);
+
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridwidth = 1;
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weighty = 1.0;
+		contentPane.add(participantScrollPane, gbc);
+
+		// **Nested Event List for Selected Participant**
+		eventListModel = new DefaultListModel<>();
+		eventListForParticipant = new JList<>(eventListModel);
+		eventListForParticipant.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JScrollPane eventScrollPane = new JScrollPane(eventListForParticipant);
+
+		gbc.gridx = 1;
+		contentPane.add(eventScrollPane, gbc);
+
+		// **Buttons Panel**
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 4, 5, 5));
+		btnAddParticipant = new JButton("Add Participant");
+		btnUpdateParticipant = new JButton("Update Participant");
+		btnDeleteParticipant = new JButton("Delete Participant");
+		btnEventScreen = new JButton("Event Screen");
+
+		btnAddParticipant.setEnabled(false);
+		btnUpdateParticipant.setEnabled(false);
+		btnDeleteParticipant.setEnabled(false);
+
+		buttonPanel.add(btnAddParticipant);
+		buttonPanel.add(btnUpdateParticipant);
+		buttonPanel.add(btnDeleteParticipant);
+		buttonPanel.add(btnEventScreen);
+
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = 2;
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.weighty = 0;
+		contentPane.add(buttonPanel, gbc);
+
+		// **Error Label (Fixed Size)**
+		lblError = new JTextArea();
+		lblError.setForeground(Color.RED);
+		lblError.setEditable(false);
+		lblError.setWrapStyleWord(true);
+		lblError.setLineWrap(true);
+		lblError.setOpaque(false);
+		lblError.setFocusable(false);
+		lblError.setBorder(null);
+		lblError.setPreferredSize(new Dimension(500, 40));
+		lblError.setMinimumSize(new Dimension(500, 40));
+		lblError.setMaximumSize(new Dimension(500, 40));
+
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = 2;
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		contentPane.add(lblError, gbc);
+
+		// **Button Actions**
+		btnAddParticipant.addActionListener(e -> new Thread(() -> {addParticipant();}).start());
+		btnUpdateParticipant.addActionListener(e -> new Thread(() -> {updateParticipant();}).start());
+		btnDeleteParticipant.addActionListener(e -> new Thread(() -> {deleteParticipant();}).start());
+		btnEventScreen.addActionListener(e -> openEventScreen());
+
+		participantList.addListSelectionListener(e -> updateSelection());
+
+		// **Enable Add Button Only When Fields Are Filled**
+		DocumentListener docListener = new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				toggleAddButton();
 			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				toggleAddButton();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				toggleAddButton();
+			}
+		};
+
+		txtParticipantName.getDocument().addDocumentListener(docListener);
+		txtParticipantEmail.getDocument().addDocumentListener(docListener);
+		txtEventId.getDocument().addDocumentListener(docListener);
+	}
+
+	private void toggleAddButton() {
+		boolean isParticipantNameFilled = !txtParticipantName.getText().trim().isEmpty();
+		boolean isParticipantEmailFilled = !txtParticipantEmail.getText().trim().isEmpty();
+		boolean isEventIdFilled = !txtEventId.getText().trim().isEmpty() && isValidNumber(txtEventId.getText().trim());
+
+		btnAddParticipant.setEnabled(isParticipantNameFilled && isParticipantEmailFilled && isEventIdFilled);
+	}
+
+	private boolean isValidNumber(String text) {
+		return Pattern.matches("\\d+", text);
+	}
+
+	private void addParticipant() {
+		try {
+			EventModel event = new EventModel();
+			event.setEventId(Long.parseLong(txtEventId.getText().trim()));
+
+			ParticipantModel participant = new ParticipantModel(txtParticipantName.getText().trim(),
+					txtParticipantEmail.getText().trim());
+
+			participantController.addParticipant(participant, event);
+		} catch (Exception e) {
+			lblError.setText("Error: " + e.getMessage());
+		}
+	}
+
+	private void updateParticipant() {
+		try {
+			Long participantId = Long.parseLong(txtParticipantId.getText());
+			ParticipantModel participant = new ParticipantModel(participantId, txtParticipantName.getText().trim(),
+					txtParticipantEmail.getText().trim());
+
+			participantController.updateParticipant(participant);
+		} catch (Exception e) {
+			lblError.setText("Error: " + e.getMessage());
+		}
+	}
+
+	private void deleteParticipant() {
+		try {
+			ParticipantModel participant = participantList.getSelectedValue();
+			EventModel selectedEvent = eventListForParticipant.getSelectedValue();
+
+			if (participant == null || selectedEvent == null) {
+				lblError.setText("Error: Select a participant and an event.");
+				return;
+			}
+
+			participantController.deleteParticipant(participant, selectedEvent);
+		} catch (Exception e) {
+			lblError.setText("Error: " + e.getMessage());
+		}
+	}
+
+	private void openEventScreen() {
+		eventManagementView.clearEventListModel();
+		eventManagementView.getEventController().getAllEvents();
+		eventManagementView.setVisible(true);
+    	this.dispose();
+    	lblError.setText(" ");
+        clearFields();
+	}
+
+	private void clearFields() {
+		SwingUtilities.invokeLater(() -> {
+			txtParticipantId.setText("");
+			txtParticipantName.setText("");
+			txtParticipantEmail.setText("");
+			txtEventId.setText("");
+			btnUpdateParticipant.setEnabled(false);
+			btnDeleteParticipant.setEnabled(false);
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
-	public ParticipantManagementViewScreen() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 350); // Adjust the height to accommodate new field
-		contentPane = new JPanel();
-		contentPane.setName("");
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+	private void updateSelection() {
+		ParticipantModel selectedParticipant = participantList.getSelectedValue();
+		if (selectedParticipant != null) {
+			txtParticipantId.setText(String.valueOf(selectedParticipant.getParticipantId()));
+			txtParticipantName.setText(selectedParticipant.getParticipantName());
+			txtParticipantEmail.setText(selectedParticipant.getParticipantEmail());
 
-		setContentPane(contentPane);
-		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[] { 0, 0, 0 };
-		gbl_contentPane.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gbl_contentPane.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
-		gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		contentPane.setLayout(gbl_contentPane);
+			eventListModel.clear();
+			eventListModel.addAll(selectedParticipant.getEvents());
+			btnUpdateParticipant.setEnabled(true);
+			btnDeleteParticipant.setEnabled(true);
+		}
+	}
 
-		JLabel lblNewLabel = new JLabel("Name");
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel.gridx = 0;
-		gbc_lblNewLabel.gridy = 0;
-		contentPane.add(lblNewLabel, gbc_lblNewLabel);
+	// **Implementing All Required Methods from ParticipantManagementView**
+	@Override
+	public void showAllParticipants(List<ParticipantModel> participants) {
+		participantListModel.clear();
+		participantListModel.addAll(participants);
+	}
 
-		textField = new JTextField();
-		textField.setName("NameTextBox");
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 0;
-		contentPane.add(textField, gbc_textField);
-		textField.setColumns(10);
+	@Override
+	public void showAllEvents(List<EventModel> events) {
+		eventListModel.clear();
+		eventListModel.addAll(events);
+	}
 
-		JLabel lblNewLabel_1 = new JLabel("Email");
-		lblNewLabel_1.setName("");
-		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
-		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_1.gridx = 0;
-		gbc_lblNewLabel_1.gridy = 1;
-		contentPane.add(lblNewLabel_1, gbc_lblNewLabel_1);
+	@Override
+	public void participantAdded(ParticipantModel participant) {
+		SwingUtilities.invokeLater(() -> {
+			participantController.getAllParticipants();
+			participantController.getAllEvents();
+			lblError.setText(" ");
+		});
+		clearFields();
+	}
 
-		textField_1 = new JTextField();
-		textField_1.setName("EmailTextBox");
-		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1.gridx = 1;
-		gbc_textField_1.gridy = 1;
-		contentPane.add(textField_1, gbc_textField_1);
-		textField_1.setColumns(10);
+	@Override
+	public void participantDeleted(ParticipantModel participant) {
+		SwingUtilities.invokeLater(() -> {
+			participantController.getAllParticipants();
+			participantController.getAllEvents();
+			lblError.setText(" ");
+		});
+		clearFields();
+	}
 
-		// Add the new Event ID label and text field here
-		JLabel lblNewLabel_eventId = new JLabel("Event ID");
-		GridBagConstraints gbc_lblNewLabel_eventId = new GridBagConstraints();
-		gbc_lblNewLabel_eventId.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_eventId.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_eventId.gridx = 0;
-		gbc_lblNewLabel_eventId.gridy = 2;
-		contentPane.add(lblNewLabel_eventId, gbc_lblNewLabel_eventId);
+	@Override
+	public void participantUpdated(ParticipantModel participant) {
+		SwingUtilities.invokeLater(() -> {
+			participantController.getAllParticipants();
+			participantController.getAllEvents();
+			lblError.setText(" ");
+		});
+		clearFields();
+	}
 
-		textField_eventId = new JTextField();
-		textField_eventId.setName("EventIdTextBox");
-		GridBagConstraints gbc_textField_eventId = new GridBagConstraints();
-		gbc_textField_eventId.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_eventId.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_eventId.gridx = 1;
-		gbc_textField_eventId.gridy = 2;
-		contentPane.add(textField_eventId, gbc_textField_eventId);
-		textField_eventId.setColumns(10);
+	@Override
+	public void showError(String message, ParticipantModel participant) {
+		SwingUtilities.invokeLater(() -> lblError.setText(message + ": " + participant));
+	}
+	
+	public void setEventView(EventManagementViewScreen eventView) {
+		this.eventManagementView = eventView;
 
-		AddButton = new JButton("Add");
-		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewButton.gridwidth = 2;
-		gbc_btnNewButton.gridx = 0;
-		gbc_btnNewButton.gridy = 3;
-		contentPane.add(AddButton, gbc_btnNewButton);
-
-		UpdateButton = new JButton("Update");
-		GridBagConstraints gbc_btnNewButton1 = new GridBagConstraints();
-		gbc_btnNewButton1.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewButton1.gridwidth = 2;
-		gbc_btnNewButton1.gridx = 0;
-		gbc_btnNewButton1.gridy = 4;
-		contentPane.add(UpdateButton, gbc_btnNewButton1);
-
-		scrollPane = new JScrollPane();
-		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.gridwidth = 2;
-		gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
-		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 5;
-		contentPane.add(scrollPane, gbc_scrollPane);
-
-		list = new JList();
-		scrollPane.setViewportView(list);
-		list.setName("List<Event>");
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-		btnNewButton_1 = new JButton("Delete Participants");
-		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
-		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewButton_1.gridwidth = 2;
-		gbc_btnNewButton_1.gridx = 0;
-		gbc_btnNewButton_1.gridy = 6;
-		contentPane.add(btnNewButton_1, gbc_btnNewButton_1);
-
-		lblNewLabel_2 = new JLabel("");
-		lblNewLabel_2.setName("ErrorLabel1");
-		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
-		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel_2.gridwidth = 2;
-		gbc_lblNewLabel_2.gridx = 0;
-		gbc_lblNewLabel_2.gridy = 7;
-		contentPane.add(lblNewLabel_2, gbc_lblNewLabel_2);
-
-		lblNewLabel_3 = new JLabel("");
-		lblNewLabel_3.setName("ErrorLabel2");
-		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
-		gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel_3.gridwidth = 2;
-		gbc_lblNewLabel_3.gridx = 0;
-		gbc_lblNewLabel_3.gridy = 8;
-		contentPane.add(lblNewLabel_3, gbc_lblNewLabel_3);
-
-		lblNewLabel_4 = new JLabel("");
-		lblNewLabel_4.setName("ErrorLabel3");
-		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
-		gbc_lblNewLabel_4.gridwidth = 2;
-		gbc_lblNewLabel_4.gridx = 0;
-		gbc_lblNewLabel_4.gridy = 9;
-		contentPane.add(lblNewLabel_4, gbc_lblNewLabel_4);
+	}
+	
+	public void clearEventListModel() {
+		eventListModel.clear();
+	}
+	
+	public void clearParticipantListModel() {
+		participantListModel.clear();
 	}
 }
