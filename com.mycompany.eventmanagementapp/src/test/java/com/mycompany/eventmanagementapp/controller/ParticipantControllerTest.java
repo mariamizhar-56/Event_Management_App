@@ -41,7 +41,7 @@ public class ParticipantControllerTest {
 	public static final long EVENT_ID = 1;
 	public static final long EVENT_ID_2 = 2;
 	public static final String EVENT_NAME = "Music Festival";
-	public static final LocalDate EVENT_DATE = LocalDate.of(2026, 10, 5);
+	public static final LocalDate EVENT_DATE = LocalDate.now().plusDays(10);
 	public static final String EVENT_LOCATION = "Florence";
 
 	public static final long PARTICIPANT_ID = 1;

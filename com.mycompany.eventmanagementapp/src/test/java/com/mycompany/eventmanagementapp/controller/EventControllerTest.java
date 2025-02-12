@@ -39,8 +39,8 @@ public class EventControllerTest {
 
 	public static final long EVENT_ID = 1;
 	public static final String EVENT_NAME = "Music Festival";
-	public static final LocalDate EVENT_DATE = LocalDate.of(2026, 10, 5);
-	public static final LocalDate EVENT_PAST_DATE = LocalDate.of(2022, 10, 5);
+	public static final LocalDate EVENT_DATE = LocalDate.now().plusDays(10);
+	public static final LocalDate EVENT_PAST_DATE = LocalDate.now().minusDays(10);
 	public static final LocalDate EVENT_UPDATED_DATE = LocalDate.of(2027, 10, 5);
 	public static final String EVENT_LOCATION = "Florence";
 
