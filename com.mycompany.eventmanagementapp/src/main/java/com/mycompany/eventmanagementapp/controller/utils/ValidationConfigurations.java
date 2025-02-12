@@ -13,9 +13,11 @@ public class ValidationConfigurations {
 	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
 	// Private constructor to prevent instantiation since this is a utility class
-	private ValidationConfigurations() {
-		
-	}
+	
+	  private ValidationConfigurations() {
+	  
+	  }
+	 
 
 	// Validates that a required string is not null or empty
 	// Throws a ValidationException if the string is invalid
@@ -30,19 +32,6 @@ public class ValidationConfigurations {
 		LOGGER.debug("Validation passed for field: {}", fieldName);
 		return true;
 	}
-
-	// Validates that the Integer Id is greater than zero
-	// Throws a ValidationException if the Id(Integer) is invalid
-	/*
-	 * public static boolean validateId(Integer id, String fieldName) {
-	 * LOGGER.debug("Validating Id: {}", id);
-	 * 
-	 * if (id <= 0) { LOGGER.error("Validation failed: {} is less than 1",
-	 * fieldName); throw new ValidationException(fieldName +
-	 * " must be greater than zero"); }
-	 * 
-	 * LOGGER.debug("Validation passed for {}: {}", fieldName, id); return true; }
-	 */
 
 	// Validates that the date is not null and is not in the past
 	// Throws a ValidationException if the date is invalid
@@ -62,22 +51,22 @@ public class ValidationConfigurations {
 		LOGGER.debug("Validation passed for date: {}", date);
 		return true;
 	}
-	
-	//Validate Email format
+
+	// Validate Email format
 	public static boolean validateEmail(String email) {
 		LOGGER.debug("Validating Email format");
-		
-        if (email == null || email.trim().isEmpty()) {
-        	LOGGER.error("Validation failed: Email is null or empty");
-        	throw new ValidationException("Email cannot be null or empty");
-        }
-        
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-        	LOGGER.error("Validation failed: Email format is not correct.");
-            throw new ValidationException("Invalid email format.");
-        }
-        
-        LOGGER.debug("Validation passed for email: {}", email);
-        return true;
+
+		if (email == null || email.trim().isEmpty()) {
+			LOGGER.error("Validation failed: Email is null or empty");
+			throw new ValidationException("Email cannot be null or empty");
+		}
+
+		if (!EMAIL_PATTERN.matcher(email).matches()) {
+			LOGGER.error("Validation failed: Email format is not correct.");
+			throw new ValidationException("Invalid email format.");
+		}
+
+		LOGGER.debug("Validation passed for email: {}", email);
+		return true;
 	}
 }
