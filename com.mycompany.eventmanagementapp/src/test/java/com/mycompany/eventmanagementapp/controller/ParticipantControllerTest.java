@@ -38,16 +38,16 @@ public class ParticipantControllerTest {
 	@InjectMocks
 	private ParticipantController participantController;
 
-	public static final long EVENT_ID = 1;
-	public static final long EVENT_ID_2 = 2;
-	public static final String EVENT_NAME = "Music Festival";
-	public static final LocalDate EVENT_DATE = LocalDate.now().plusDays(10);
-	public static final String EVENT_LOCATION = "Florence";
+	private static final long EVENT_ID = 1;
+	private static final long EVENT_ID_2 = 2;
+	private static final String EVENT_NAME = "Music Festival";
+	private static final LocalDate EVENT_DATE = LocalDate.now().plusDays(10);
+	private static final String EVENT_LOCATION = "Florence";
 
-	public static final long PARTICIPANT_ID = 1;
-	public static final String PARTICIPANT_NAME = "John";
-	public static final String PARTICIPANT_EMAIL = "John@gmail.com";
-	public static final String PARTICIPANT_INVALID_EMAIL = "John@gmail";
+	private static final long PARTICIPANT_ID = 1;
+	private static final String PARTICIPANT_NAME = "John";
+	private static final String PARTICIPANT_EMAIL = "John@gmail.com";
+	private static final String PARTICIPANT_INVALID_EMAIL = "John@gmail";
 
 	private AutoCloseable closeable;
 

@@ -41,10 +41,10 @@ public class EventControllerRaceConditionTest {
 
 	private AutoCloseable closeable;
 	
-	public static final long EVENT_ID = 1;
-	public static final String EVENT_NAME = "Music Festival";
-	public static final LocalDate EVENT_DATE = LocalDate.now().plusDays(10);
-	public static final String EVENT_LOCATION = "Florence";
+	private static final long EVENT_ID = 1;
+	private static final String EVENT_NAME = "Music Festival";
+	private static final LocalDate EVENT_DATE = LocalDate.now().plusDays(10);
+	private static final String EVENT_LOCATION = "Florence";
 
 	@Before
 	public void setup() {
