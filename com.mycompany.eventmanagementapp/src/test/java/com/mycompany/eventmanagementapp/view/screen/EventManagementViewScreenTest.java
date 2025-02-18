@@ -31,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 import com.mycompany.eventmanagementapp.controller.EventController;
 import com.mycompany.eventmanagementapp.view.EventManagementView;
 import com.mycompany.eventmanagementapp.model.EventModel;
+import com.mycompany.eventmanagementapp.model.ParticipantModel;
 
 public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 
@@ -186,6 +187,37 @@ public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 		window.list(LIST_EVENT).clearSelection();
 		deleteButton.requireDisabled();
 		updateButton.requireDisabled();
+	}
+
+	// Test update button is disabled when event is not selected and Event Id is
+	// empty
+	@Test
+	public void testUpdateButtondisabledWhenListIsNotSelectedAndEventIdIsEmpty() {
+		GuiActionRunner.execute(() -> eventViewScreen.getEventListModel()
+				.addElement(new EventModel(EVENT_ID, EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1)));
+
+		window.list(LIST_EVENT).selectItem(0);
+		window.list(LIST_EVENT).clearSelection();
+		setFieldValues(EVENT_NAME_1, EVENT_LOCATION_1, EVENT_DATE_1.toString());
+
+		JButtonFixture updateButton = window.button(JButtonMatcher.withText(BTN_UPDATE_EVENT));
+		updateButton.requireDisabled();
+	}
+
+	// Test update button is enabled when event is selected and updated values are
+	// entered in text fields
+	@Test
+	public void testUpdateButtonEnabledWhenListIsSelected() {
+		EventModel event = new EventModel(EVENT_ID, EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1);
+		GuiActionRunner.execute(() -> {
+			eventViewScreen.eventAdded(event);
+		});
+		
+		window.list(LIST_EVENT).selectItem(0);
+		ResetFieldValues();
+		setFieldValues(EVENT_NAME_1, EVENT_LOCATION_1, EVENT_DATE_1.toString());
+
+		window.button(JButtonMatcher.withText(BTN_UPDATE_EVENT)).requireEnabled();
 	}
 
 	// Test populating text fields when event is selected from List
@@ -465,6 +497,12 @@ public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 		window.textBox(TXT_EVENT_NAME).enterText(eventName);
 		window.textBox(TXT_EVENT_LOCATION).enterText(eventLocation);
 		window.textBox(TXT_EVENT_DATE).enterText(eventDate);
+	}
+	
+	private void ResetFieldValues() {
+		window.textBox(TXT_EVENT_NAME).setText("");
+		window.textBox(TXT_EVENT_LOCATION).setText("");
+		window.textBox(TXT_EVENT_DATE).setText("");
 	}
 
 	private String getDisplayString(EventModel event) {

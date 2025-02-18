@@ -207,10 +207,11 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 		boolean isEventLocationFilled = !txtEventLocation.getText().trim().isEmpty();
 		boolean isEventDateFilled = !txtEventDate.getText().trim().isEmpty()
 				&& isValidDate(txtEventDate.getText().trim());
+		boolean isEventSelected = !eventList.isSelectionEmpty();
 
-		btnUpdateEvent.setEnabled(isEventNameFilled && isEventLocationFilled && isEventDateFilled);
+		btnUpdateEvent.setEnabled(isEventSelected && isEventNameFilled && isEventLocationFilled && isEventDateFilled);
 	}
-
+	
 	private boolean isValidDate(String date) {
 		return Pattern.matches("^\\d{4}-\\d{2}-\\d{2}$", date);
 	}
