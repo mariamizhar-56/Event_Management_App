@@ -3,6 +3,7 @@ package com.mycompany.eventmanagementapp.view.screen;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.awt.Color;
@@ -60,6 +61,7 @@ public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 	private static final String BTN_UPDATE_EVENT = "Update Event";
 	private static final String BTN_DELETE_EVENT = "Delete Event";
 	private static final String BTN_PARTICIPANT_SCREEN = "Participant Screen";
+	private static final String BTN_REFRESH_SCREEN = "Refresh";
 
 	private static final String LBL_EVENT_ID = "Event ID:";
 	private static final String LBL_EVENT_NAME = "Event Name:";
@@ -118,6 +120,7 @@ public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 		window.button(JButtonMatcher.withText(BTN_UPDATE_EVENT)).requireVisible().requireDisabled();
 		window.button(JButtonMatcher.withText(BTN_DELETE_EVENT)).requireVisible().requireDisabled();
 		window.button(JButtonMatcher.withText(BTN_PARTICIPANT_SCREEN)).requireVisible().requireEnabled();
+		window.button(JButtonMatcher.withText(BTN_REFRESH_SCREEN)).requireVisible().requireEnabled();
 
 		// Error Text
 		window.textBox(TXT_EVENT_ERROR).requireVisible().requireNotEditable().requireText(" ");
@@ -212,7 +215,7 @@ public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 		GuiActionRunner.execute(() -> {
 			eventViewScreen.eventAdded(event);
 		});
-		
+
 		window.list(LIST_EVENT).selectItem(0);
 		ResetFieldValues();
 		setFieldValues(EVENT_NAME_1, EVENT_LOCATION_1, EVENT_DATE_1.toString());
@@ -493,12 +496,37 @@ public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 		window.button(JButtonMatcher.withText(BTN_ADD_EVENT)).requireEnabled();
 	}
 
+	// Test when Refresh button is clicked then Event Screen should fully reset
+	@Test
+	public void testWhenRefreshButtonClickedThenEventScreenShouldFullyReset() {
+		EventModel event = new EventModel(EVENT_ID, EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1);
+
+		GuiActionRunner.execute(() -> {
+			DefaultListModel<EventModel> eventListModel = eventViewScreen.getEventListModel();
+			eventListModel.addElement(event);
+		});
+		window.list(LIST_EVENT).selectItem(0);
+		window.button(JButtonMatcher.withText(BTN_REFRESH_SCREEN)).click();
+
+		await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> window.textBox(TXT_EVENT_NAME).requireText(""));
+		window.textBox(TXT_EVENT_ID).requireText("");
+		window.textBox(TXT_EVENT_NAME).requireText("");
+		window.textBox(TXT_EVENT_LOCATION).requireText("");
+		window.textBox(TXT_EVENT_DATE).requireText("");
+		window.textBox(TXT_EVENT_ERROR).requireText(" ");
+		window.button(JButtonMatcher.withText(BTN_UPDATE_EVENT)).requireDisabled();
+		window.button(JButtonMatcher.withText(BTN_DELETE_EVENT)).requireDisabled();
+		window.button(JButtonMatcher.withText(BTN_ADD_EVENT)).requireDisabled();
+		verify(eventController, times(2)).getAllEvents(); // one time it will be called by Window Activator and second
+															// time from Refresh button. In total 2 times.
+	}
+
 	private void setFieldValues(String eventName, String eventLocation, String eventDate) {
 		window.textBox(TXT_EVENT_NAME).enterText(eventName);
 		window.textBox(TXT_EVENT_LOCATION).enterText(eventLocation);
 		window.textBox(TXT_EVENT_DATE).enterText(eventDate);
 	}
-	
+
 	private void ResetFieldValues() {
 		window.textBox(TXT_EVENT_NAME).setText("");
 		window.textBox(TXT_EVENT_LOCATION).setText("");

@@ -25,7 +25,7 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtEventName, txtEventLocation, txtEventDate, txtEventId;
-	private JButton btnAddEvent, btnUpdateEvent, btnDeleteEvent, btnParticipantScreen;
+	private JButton btnAddEvent, btnUpdateEvent, btnDeleteEvent, btnParticipantScreen, btnRefresh;
 	private JList<EventModel> eventList;
 	private DefaultListModel<EventModel> eventListModel;
 	private JTextArea lblError;
@@ -53,8 +53,8 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 
 		setTitle("Event Management Screen");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 500);
-		setResizable(true);
+		setBounds(100, 100, 750, 500);
+		setResizable(false);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -123,6 +123,8 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 		btnUpdateEvent.setName("Update Event");
 		btnDeleteEvent = new JButton("Delete Event");
 		btnDeleteEvent.setName("Delete Event");
+		btnRefresh = new JButton("Refresh");
+		btnRefresh.setName("Refresh");
 		btnParticipantScreen = new JButton("Participant Screen");
 		btnParticipantScreen.setName("Participant Screen");
 
@@ -133,6 +135,7 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 		buttonPanel.add(btnAddEvent);
 		buttonPanel.add(btnUpdateEvent);
 		buttonPanel.add(btnDeleteEvent);
+		buttonPanel.add(btnRefresh);
 		buttonPanel.add(btnParticipantScreen);
 
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -155,9 +158,9 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 		lblError.setBorder(null);
 
 		// **Fix Height and Width of Error Label**
-		lblError.setPreferredSize(new Dimension(500, 40));
-		lblError.setMinimumSize(new Dimension(500, 40));
-		lblError.setMaximumSize(new Dimension(500, 40));
+		lblError.setPreferredSize(new Dimension(650, 40));
+		lblError.setMinimumSize(new Dimension(650, 40));
+		lblError.setMaximumSize(new Dimension(650, 40));
 
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridwidth = 2;
@@ -176,6 +179,8 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 			deleteEvent();
 		}).start());
 		btnParticipantScreen.addActionListener(e -> openParticipantScreen());
+		btnRefresh.addActionListener(e -> RefreshScreen());
+		
 
 		eventList.addListSelectionListener(e -> updateSelection());
 
@@ -238,7 +243,13 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 		participantManagementView.setVisible(true);
 		this.dispose();
 		lblError.setText(" ");
-		clearFields();
+		clearFieldsAndButtons();
+	}
+	
+	private void RefreshScreen() {
+		lblError.setText(" ");
+		clearFieldsAndButtons();
+		eventController.getAllEvents();
 	}
 
 	private void updateSelection() {
@@ -252,6 +263,12 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 			btnUpdateEvent.setEnabled(true);
 			btnDeleteEvent.setEnabled(true);
 		} else {
+			clearFieldsAndButtons();
+		}
+	}
+
+	private void clearFieldsAndButtons() {
+		SwingUtilities.invokeLater(() -> {
 			txtEventId.setText("");
 			txtEventName.setText("");
 			txtEventLocation.setText("");
@@ -259,26 +276,15 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 			btnAddEvent.setEnabled(false);
 			btnUpdateEvent.setEnabled(false);
 			btnDeleteEvent.setEnabled(false);
-		}
-	}
-
-	private void clearFields() {
-		SwingUtilities.invokeLater(() -> {
-			txtEventId.setText("");
-			txtEventName.setText("");
-			txtEventLocation.setText("");
-			txtEventDate.setText("");
-			btnUpdateEvent.setEnabled(false);
-			btnDeleteEvent.setEnabled(false);
 		});
 	}
 
 	@Override
 	public void showAllEvents(List<EventModel> events) {
-		// eventListModel.clear();
-		// eventListModel.addAll(events);
+		 eventListModel.clear();
+		 eventListModel.addAll(events);
 
-		events.stream().forEach(eventListModel::addElement);
+		//events.stream().forEach(eventListModel::addElement);
 	}
 
 	@Override
@@ -287,7 +293,7 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 			eventListModel.addElement(event);
 			lblError.setText(" ");
 		});
-		clearFields();
+		clearFieldsAndButtons();
 		eventList.clearSelection();
 	}
 
@@ -304,7 +310,7 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 		});
 
 		// eventListModel.removeElement(event);
-		clearFields();
+		clearFieldsAndButtons();
 		eventList.clearSelection();
 	}
 
@@ -321,7 +327,7 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 			lblError.setText(" ");
 		});
 		// eventList.repaint();
-		clearFields();
+		clearFieldsAndButtons();
 		eventList.clearSelection();
 	}
 
