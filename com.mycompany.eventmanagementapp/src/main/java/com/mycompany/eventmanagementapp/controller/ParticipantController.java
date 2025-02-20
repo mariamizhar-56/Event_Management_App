@@ -140,6 +140,8 @@ public class ParticipantController {
 			participantManagementView.showError("Selected event or participant is null", participant);
 			return;
 		}
+		//Fetch fresh Event object from Database for proper removal of Participant and Event linking
+		selectedEvent = eventRepository.getEventById(selectedEvent.getEventId());
 
 		// Ensure participant exists before deleting
 		ParticipantModel existingParticipant = participantRepository

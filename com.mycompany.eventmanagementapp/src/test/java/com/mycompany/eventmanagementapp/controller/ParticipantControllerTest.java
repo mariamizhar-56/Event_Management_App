@@ -299,7 +299,9 @@ public class ParticipantControllerTest {
 		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
 		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(null);
+		when(eventRepository.getEventById(selectedEvent.getEventId())).thenReturn(selectedEvent);
 		participantController.deleteParticipant(participant, selectedEvent);
+		verify(eventRepository).getEventById(selectedEvent.getEventId());
 		verify(participantManagementView).showError("Participant doesn't exist with email " + PARTICIPANT_EMAIL,
 				participant);
 		verifyNoMoreInteractions(ignoreStubs(eventRepository));
@@ -314,7 +316,9 @@ public class ParticipantControllerTest {
 		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
 		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(participant);
+		when(eventRepository.getEventById(selectedEvent.getEventId())).thenReturn(selectedEvent);
 		participantController.deleteParticipant(participant, selectedEvent);
+		verify(eventRepository).getEventById(selectedEvent.getEventId());
 		verify(participantManagementView).showError("Participant with email " + PARTICIPANT_EMAIL
 				+ " is not associated with event Id " + selectedEvent.getEventId(), participant);
 		verifyNoMoreInteractions(ignoreStubs(eventRepository));
@@ -331,8 +335,10 @@ public class ParticipantControllerTest {
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
 		participant.addEvent(selectedEvent);
 		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(participant);
+		when(eventRepository.getEventById(selectedEvent.getEventId())).thenReturn(selectedEvent);
 		participantController.deleteParticipant(participant, selectedEvent);
 		InOrder inOrder = inOrder(eventRepository, participantRepository, participantManagementView);
+		inOrder.verify(eventRepository).getEventById(selectedEvent.getEventId());
 		inOrder.verify(participantRepository).updateParticipant(participant);
 		inOrder.verify(eventRepository).updateEvent(selectedEvent);
 		inOrder.verify(participantRepository).deleteParticipant(participant);
@@ -353,8 +359,10 @@ public class ParticipantControllerTest {
 		participant.addEvent(selectedEvent);
 		participant.addEvent(AdditionalEvent);
 		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(participant);
+		when(eventRepository.getEventById(selectedEvent.getEventId())).thenReturn(selectedEvent);
 		participantController.deleteParticipant(participant, selectedEvent);
 		InOrder inOrder = inOrder(eventRepository, participantRepository, participantManagementView);
+		inOrder.verify(eventRepository).getEventById(selectedEvent.getEventId());
 		inOrder.verify(participantRepository).updateParticipant(participant);
 		inOrder.verify(eventRepository).updateEvent(selectedEvent);
 		inOrder.verify(participantManagementView).participantUpdated(participant);
