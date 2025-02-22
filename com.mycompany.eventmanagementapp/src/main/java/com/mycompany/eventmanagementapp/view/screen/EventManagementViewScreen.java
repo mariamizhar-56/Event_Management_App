@@ -299,7 +299,10 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 
 	@Override
 	public void showError(String message, EventModel event) {
-		SwingUtilities.invokeLater(() -> lblError.setText(message + ": " + event));
+		SwingUtilities.invokeLater(() -> {
+			lblError.setText(message + ": " + event);
+			eventController.getAllEvents();
+		});
 	}
 
 	@Override
