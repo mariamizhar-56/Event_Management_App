@@ -237,6 +237,7 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 	private void updateParticipant() {
 		ParticipantModel selectedParticipant = participantList.getSelectedValue();
 		selectedParticipant.setParticipantName(txtParticipantName.getText().trim());
+		selectedParticipant.setParticipantEmail(txtParticipantEmail.getText().trim());
 
 		participantController.updateParticipant(selectedParticipant);
 	}
@@ -361,7 +362,11 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 
 	@Override
 	public void showError(String message, ParticipantModel participant) {
-		SwingUtilities.invokeLater(() -> lblError.setText(message + ": " + participant));
+		SwingUtilities.invokeLater(() -> {
+			lblError.setText(message + ": " + participant);
+			participantController.getAllEvents();
+			participantController.getAllParticipants();
+		});
 	}
 
 	public void setEventView(EventManagementViewScreen eventView) {
