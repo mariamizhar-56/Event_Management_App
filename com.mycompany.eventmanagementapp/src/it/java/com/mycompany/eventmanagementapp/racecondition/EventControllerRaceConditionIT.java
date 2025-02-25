@@ -22,6 +22,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import com.mycompany.eventmanagementapp.model.EventModel;
 import com.mycompany.eventmanagementapp.controller.EventController;
+import com.mycompany.eventmanagementapp.repository.EventRepository;
 import com.mycompany.eventmanagementapp.repository.mysql.EventMySqlRepository;
 import com.mycompany.eventmanagementapp.view.screen.EventManagementViewScreen;
 
@@ -42,7 +43,7 @@ public class EventControllerRaceConditionIT {
 
 	private EventController eventController;
 
-	private EventMySqlRepository eventRepository;
+	private EventRepository eventRepository;
 
 	private static final long DEFAULT_EVENT_ID = -1;
 
