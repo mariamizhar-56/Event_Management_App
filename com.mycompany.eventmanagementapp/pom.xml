@@ -27,6 +27,7 @@
 		<awaitility-version>4.0.2</awaitility-version>
 		<h2-version>1.4.200</h2-version>
 		<mysql-testContainer-version>1.19.8</mysql-testContainer-version>
+		<cucumber.version>7.0.0</cucumber.version>
 	</properties>
 
 	<dependencies>
@@ -136,6 +137,18 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate-core-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-java</artifactId>
+			<version>${cucumber.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-junit</artifactId>
+			<version>${cucumber.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
