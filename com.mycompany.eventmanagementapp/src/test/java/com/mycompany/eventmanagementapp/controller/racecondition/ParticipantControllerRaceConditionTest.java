@@ -113,7 +113,7 @@ public class ParticipantControllerRaceConditionTest {
 		// Verify that only one participant was added to the list (no duplicates)
 		assertThat(participants).containsExactly(newParticipant);
 		// Verify that participant has been linked to specific event
-		assertThat(participants.getFirst().getEvents()).containsExactly(event);
+		assertThat(participants.get(0).getEvents()).containsExactly(event);
 
 		// Verify that the addParticipant method was called exactly once
 		verify(participantRepository, times(1)).addParticipant(any(ParticipantModel.class));
@@ -142,7 +142,7 @@ public class ParticipantControllerRaceConditionTest {
 
 		// Stub the updateParticipant and updateEvent methods
 		doAnswer(invocation -> {
-			participants.getFirst().addEvent(event); // Adding link between Existing Participant and Event
+			participants.get(0).addEvent(event); // Adding link between Existing Participant and Event
 			return null;
 		}).when(participantRepository).updateParticipant(any(ParticipantModel.class));
 
@@ -183,7 +183,7 @@ public class ParticipantControllerRaceConditionTest {
 	    participants.add(participant);
 
 	    // Stub repository methods
-	    when(eventRepository.getEventById(EVENT_ID)).thenReturn(null);
+	    when(eventRepository.getEventById(EVENT_ID)).thenReturn(event);
 	    when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenAnswer(invocation -> participants.stream().findFirst().orElse(null));
 
 	    // Stub methods to simulate removing the event and deleting the participant
