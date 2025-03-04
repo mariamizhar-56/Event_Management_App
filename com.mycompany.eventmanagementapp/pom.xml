@@ -13,28 +13,119 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
+		<!-- DB Root Password -->
+		<env-MYSQLROOTPASSWORD>test</env-MYSQLROOTPASSWORD>
+		
+		<jaxb-api-version>2.3.1</jaxb-api-version>
+		<sonar-maven-plugin-version>3.8.0.2131</sonar-maven-plugin-version>
+		<assertj-swing-junit-version>3.17.1</assertj-swing-junit-version>
+		<awaitility-version>4.0.2</awaitility-version>
+		<picocli-version>4.6.1</picocli-version>
+		<coveralls-maven-plugin-version>4.3.0</coveralls-maven-plugin-version>
+		<log4j-api-version>2.13.0</log4j-api-version>
+		<wait-log>ready for connections. Bind-address</wait-log>
+		<docker-maven-plugin-version>0.34.1</docker-maven-plugin-version>
+		<maven-surefire-report-plugin-version>3.2.5</maven-surefire-report-plugin-version>
+		
+		<!-- Dependency Properties -->
+		<logback-classic-version>1.2.3</logback-classic-version>
+		<mysql-version>8.0.33</mysql-version>
+		<mysql-testContainer-version>1.19.8</mysql-testContainer-version>
+		<hibernate-core-version>5.4.15.Final</hibernate-core-version>
+		<h2-version>1.4.200</h2-version>
+		<junit.version>4.13</junit.version>
+		<mockito.version>4.4.0</mockito.version>
+		<assertj.version>3.15.0</assertj.version>
+		<cucumber.version>7.0.0</cucumber.version>
+
+		<!-- Plugin Properties -->
+		<pitest-maven-version>1.5.2</pitest-maven-version>
+		<maven-project-info-reports-plugin-version>3.0.0</maven-project-info-reports-plugin-version>
+		<maven-site-plugin-version>3.7.1</maven-site-plugin-version>
+		<maven-deploy-plugin-version>2.8.2</maven-deploy-plugin-version>
+		<maven-install-plugin-version>2.5.2</maven-install-plugin-version>
+		<maven-surefire-plugin-version>2.22.1</maven-surefire-plugin-version>
+		<maven-compiler-plugin-version>3.8.0</maven-compiler-plugin-version>
+		<maven-clean-plugin-version>3.1.0</maven-clean-plugin-version>
+		<jacoco-maven-plugin-version>0.8.10</jacoco-maven-plugin-version>
+
+
+		<!-- Encoding and Compiler Properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<java.version>1.8</java.version>
-		<junit.version>4.13</junit.version>
-		<mysql.version>8.0.28</mysql.version>
-		<log4j.version>2.19.0</log4j.version>
-		<jcalendar-version>1.4</jcalendar-version>
-		<hibernate-core-version>5.4.15.Final</hibernate-core-version>
-		<picocli-version>4.6.1</picocli-version>
-		<assertj-swing-junit-version>3.17.1</assertj-swing-junit-version>
-		<awaitility-version>4.0.2</awaitility-version>
-		<h2-version>1.4.200</h2-version>
-		<mysql-testContainer-version>1.19.8</mysql-testContainer-version>
-		<cucumber.version>7.0.0</cucumber.version>
-	</properties>
 
+		<!-- For each rule to be ignored, add another eXX and two corresponding
+		properties with eXX in the name as below -->
+		<sonar.issue.ignore.multicriteria>e11,e12,e13,e14</sonar.issue.ignore.multicriteria>
+
+		<!-- Disable rule for "Inheritance tree of classes should not be too
+		deep" -->
+		<sonar.issue.ignore.multicriteria.e11.ruleKey>
+			squid:MaximumInheritanceDepth
+		</sonar.issue.ignore.multicriteria.e11.ruleKey>
+		<sonar.issue.ignore.multicriteria.e11.resourceKey>
+			**/*.java
+		</sonar.issue.ignore.multicriteria.e11.resourceKey>
+
+		<!-- Disable rule for "Local variable and method parameter names should
+		comply with a naming convention" -->
+		<sonar.issue.ignore.multicriteria.e12.ruleKey>
+			java:S117
+		</sonar.issue.ignore.multicriteria.e12.ruleKey>
+		<sonar.issue.ignore.multicriteria.e12.resourceKey>
+			**/*ViewScreen.java
+		</sonar.issue.ignore.multicriteria.e12.resourceKey>
+
+		<!-- Disable rule for "Tests should include assertions": SonarQube is
+		not aware of AssertJ Swing -->
+		<sonar.issue.ignore.multicriteria.e13.ruleKey>
+			java:S2699
+		</sonar.issue.ignore.multicriteria.e13.ruleKey>
+		<sonar.issue.ignore.multicriteria.e13.resourceKey>
+			**/*ViewScreen.java
+		</sonar.issue.ignore.multicriteria.e13.resourceKey>
+		<!-- Disable rule for "Use static access with
+		"javax.swing.WindowConstants" -->
+		<sonar.issue.ignore.multicriteria.e14.ruleKey>
+			java:S3252
+		</sonar.issue.ignore.multicriteria.e14.ruleKey>
+		<sonar.issue.ignore.multicriteria.e14.resourceKey>
+			**/*ViewScreen.java
+		</sonar.issue.ignore.multicriteria.e14.resourceKey>
+
+		<sonar.coverage.exclusions>
+			**/model/*.*,
+			**/EventManagementApp.*
+		</sonar.coverage.exclusions>
+
+		<sonar.junit.reportPaths>
+			${project.build.directory}/surefire-reports
+		</sonar.junit.reportPaths>
+	</properties>
+	
 	<dependencies>
 		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>mysql</artifactId>
-			<version>${mysql-testContainer-version}</version>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-swing-junit</artifactId>
+			<version>${assertj-swing-junit-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j-api-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j-api-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -43,100 +134,37 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-swing-junit</artifactId>
-			<version>${assertj-swing-junit-version}</version>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>${mysql-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback-classic-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate-core-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mysql</artifactId>
+			<version>${mysql-testContainer-version}</version>
+
 		</dependency>
 		<dependency>
 			<groupId>org.awaitility</groupId>
 			<artifactId>awaitility</artifactId>
 			<version>${awaitility-version}</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>info.picocli</groupId>
-			<artifactId>picocli</artifactId>
-			<version>${picocli-version}</version>
-		</dependency>
-
-		<!-- JUnit 4 for Testing -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- Mockito for Mocking -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>3.12.4</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- MySQL Connector for Database -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql.version}</version>
-		</dependency>
-
-		<!-- HikariCP for Connection Pooling -->
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>3.4.5</version>
-		</dependency>
-
-		<!-- JaCoCo for Code Coverage -->
-		<dependency>
-			<groupId>org.jacoco</groupId>
-			<artifactId>org.jacoco.agent</artifactId>
-			<version>0.8.7</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- PIT Mutation Testing -->
-		<dependency>
-			<groupId>org.pitest</groupId>
-			<artifactId>pitest</artifactId>
-			<version>1.6.7</version>
-		</dependency>
-
-		<!-- Log4j for Logging -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>2.14.1</version>
-		</dependency>
-
-		<!-- SLF4J Binding for Log4j -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-reload4j</artifactId>
-			<version>2.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>com.toedter</groupId>
-			<artifactId>jcalendar</artifactId>
-			<version>${jcalendar-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>${hibernate-core-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.cucumber</groupId>
@@ -150,100 +178,420 @@
 			<version>${cucumber.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli</artifactId>
+			<version>${picocli-version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
 		<plugins>
-			<!-- Compiler Plugin -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>${maven-clean-plugin-version}</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>${maven-project-info-reports-plugin-version}</version>
+			</plugin>
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
+				<version>${maven-compiler-plugin-version}</version>
 			</plugin>
-
-			<!-- Surefire Plugin for Unit Tests -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.2</version>
-				<configuration>
-					<includes>
-						<include>**/*Test.java</include>
-					</includes>
-				</configuration>
-			</plugin>
-
-			<!-- JaCoCo Plugin for Code Coverage -->
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.7</version>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${maven-project-info-reports-plugin-version}</version>
 				<executions>
 					<execution>
+						<id>add-test-source</id>
+						<phase>generate-test-sources</phase>
 						<goals>
-							<goal>prepare-agent</goal>
+							<goal>add-test-source</goal>
 						</goals>
+						<configuration>
+							<sources>
+								<source>src/it/java</source>
+								<source>src/bdd/java</source>
+							</sources>
+						</configuration>
 					</execution>
 					<execution>
-						<id>report</id>
-						<phase>verify</phase>
+						<id>add-test-resource</id>
+						<phase>generate-test-resources</phase>
 						<goals>
-							<goal>report</goal>
+							<goal>add-test-resource</goal>
 						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/bdd/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<Main-Class>
-								com.mycompany.eventmanagementapp.EventManagementApp</Main-Class>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<Main-Class>
-								com.mycompany.eventmanagementapp.EventManagementApp</Main-Class> <!--
-							Set your main class -->
-						</manifestEntries>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Docker Plugin for Database Testing -->
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>1.4.13</version>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>${sonar-maven-plugin-version}</version>
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>unit-test</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>${maven-surefire-plugin-version}</version>
+						<configuration>
+							<systemProperties>
+								<property>
+									<name>ENVIRONMENT</name>
+									<value>testWithMaven</value>
+								</property>
+							</systemProperties>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco-maven-plugin-version}</version>
+						<configuration>
+							<excludes>
+								<exclude>**/app/*.*</exclude>
+								<exclude>**/model/*.*</exclude>
+								<exclude>**/bdd/*.*</exclude>
+							</excludes>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<!-- binds by default to the phase
+									"initialize" -->
+									<goal>prepare-agent</goal>
+									<!-- binds by default to the phase "verify" -->
+									<goal>report</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>jacoco-check</id>
+								<goals>
+									<goal>check</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<rule>
+											<element>PACKAGE</element>
+											<limits>
+												<limit>
+													<counter>LINE</counter>
+													<value>COVEREDRATIO</value>
+													<minimum>0.50</minimum>
+												</limit>
+											</limits>
+										</rule>
+									</rules>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-surefire-report-plugin</artifactId>
+						<version>${maven-surefire-report-plugin-version}</version>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>report-only</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<linkXRef>false</linkXRef>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-site-plugin</artifactId>
+						<version>${maven-site-plugin-version}</version>
+						<executions>
+							<execution>
+								<id>site</id>
+								<phase>test</phase>
+								<goals>
+									<goal>site</goal>
+								</goals>
+								<configuration>
+									<!-- Disable report generation -->
+									<generateReports>false</generateReports>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.pitest</groupId>
+						<artifactId>pitest-maven</artifactId>
+						<version>${pitest-maven-version}</version>
+						<executions>
+							<execution>
+								<id>pitest</id>
+								<phase>test</phase>
+								<goals>
+									<goal>mutationCoverage</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<targetClasses>
+								<param>com.mycompany.eventmanagementapp.*.*</param>
+							</targetClasses>
+							<targetTests>
+								<param>com.mycompany.eventmanagementapp.*.*</param>
+							</targetTests>
+							<excludedClasses>
+								<param>
+									com.mycompany.eventmanagementapp.repository.**</param>
+								<param>
+									com.mycompany.eventmanagementapp.view.screen.**</param>
+								<param>
+									com.mycompany.eventmanagementapp.model.**</param>
+								<param>
+									com.mycompany.eventmanagementapp.**</param>
+							</excludedClasses>
+							<excludedTestClasses>
+								<param>
+									com.mycompany.eventmanagementapp.controller.**IT</param>
+								<param>
+									com.mycompany.eventmanagementapp.bdd.**</param>
+								<param>
+									com.mycompany.eventmanagementapp.**E2E</param>
+								<param>
+									com.mycompany.eventmanagementapp.repository.**</param>
+								<param>
+									com.mycompany.eventmanagementapp.view.screen.**</param>
+								<param>
+									com.mycompany.eventmanagementapp.racecondition.**</param>
+							</excludedTestClasses>
+							<mutators>
+								<mutator>DEFAULTS</mutator>
+							</mutators>
+							<mutationThreshold>50</mutationThreshold>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>integration-test</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<skipTests>true</skipTests>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-surefire-report-plugin</artifactId>
+						<version>${maven-surefire-report-plugin-version}</version>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>failsafe-report-only</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<linkXRef>false</linkXRef>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-site-plugin</artifactId>
+						<version>${maven-site-plugin-version}</version>
+						<executions>
+							<execution>
+								<id>surefire-report</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>site</goal>
+								</goals>
+								<configuration>
+									<!-- Disable report generation -->
+									<generateReports>false</generateReports>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>${maven-surefire-plugin-version}</version>
+						<executions>
+						<execution>
+								<id>default-it</id>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<testSourceDirectory>src/it/java</testSourceDirectory>
+								</configuration>
+							</execution>
+							<execution>
+								<id>bdd-tests</id>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<excludes>
+										<exclude>**/*IT.java</exclude>
+									</excludes>
+									<includes>
+										<include>**/*BDD.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<version>${docker-maven-plugin-version}</version>
+						<configuration>
+							<images>
+								<image>
+									<name>mysql:${mysql-version}</name>
+									<run>
+										<ports>
+											<port>3307:3306</port> <!-- Corrected
+											port
+									for MySQL -->
+										</ports>
+										<env>
+											<MYSQL_ROOT_PASSWORD>${env-MYSQLROOTPASSWORD}</MYSQL_ROOT_PASSWORD>
+
+											<MYSQL_DATABASE>event_management_app</MYSQL_DATABASE>
+										</env>
+										<wait>
+											<log>${wait-log}</log>
+											<time>30000</time> <!-- Wait up to 30
+											seconds -->
+										</wait>
+									</run>
+								</image>
+							</images>
+						</configuration>
+						<executions>
+							<execution>
+								<id>start-docker-mysql</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>stop-docker-mysql</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jacoco</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco-maven-plugin-version}</version>
+						<configuration>
+							<excludes>
+								<exclude>**/app/*.*</exclude>
+								<exclude>**/model/*.*</exclude>
+								<exclude>**/bdd/*.*</exclude>
+							</excludes>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<!-- binds by default to the phase
+									"initialize" -->
+									<goal>prepare-agent</goal>
+									<!-- binds by default to the phase "verify" -->
+									<goal>report</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>jacoco-check</id>
+								<goals>
+									<goal>check</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<rule>
+											<element>PACKAGE</element>
+											<limits>
+												<limit>
+													<counter>LINE</counter>
+													<value>COVEREDRATIO</value>
+													<minimum>0.50</minimum>
+												</limit>
+											</limits>
+										</rule>
+									</rules>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>coveralls</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eluder.coveralls</groupId>
+						<artifactId>coveralls-maven-plugin</artifactId>
+						<version>${coveralls-maven-plugin-version}</version>
+						<dependencies>
+							<!-- This is required when using JDK 9 or higher
+								since javax.xml.bind has been removed from the JDK -->
+							<dependency>
+								<groupId>javax.xml.bind</groupId>
+								<artifactId>jaxb-api</artifactId>
+								<version>${jaxb-api-version}</version>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

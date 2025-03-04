@@ -103,6 +103,7 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 		participantList.setName("participantList");
 		JScrollPane participantScrollPane = new JScrollPane(participantList);
 		participantScrollPane.setPreferredSize(new Dimension(350, 150));
+		participantScrollPane.setMinimumSize(new Dimension(350, 150));
 
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridwidth = 1;
@@ -118,6 +119,7 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 		eventListForParticipant.setName("eventListForParticipant");
 		JScrollPane eventScrollPane = new JScrollPane(eventListForParticipant);
 		eventScrollPane.setPreferredSize(new Dimension(350, 150));
+		eventScrollPane.setMinimumSize(new Dimension(350, 150));
 
 		gbc.gridx = 1;
 		contentPane.add(eventScrollPane, gbc);
@@ -283,7 +285,8 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 			txtParticipantEmail.setText(selectedParticipant.getParticipantEmail());
 
 			eventListModel.clear();
-			eventListModel.addAll(selectedParticipant.getEvents());
+			selectedParticipant.getEvents().stream().forEach(eventListModel::addElement);
+			//eventListModel.addAll(selectedParticipant.getEvents());
 			btnUpdateParticipant.setEnabled(true);
 			// btnDeleteParticipant.setEnabled(true);
 		} else {
@@ -305,13 +308,16 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 	@Override
 	public void showAllParticipants(List<ParticipantModel> participants) {
 		participantListModel.clear();
-		participantListModel.addAll(participants);
+		//participantListModel.addAll(participants);
+		participants.stream().forEach(participantListModel::addElement);
+		
 	}
 
 	@Override
 	public void showAllEvents(List<EventModel> events) {
 		eventListModel.clear();
-		eventListModel.addAll(events);
+		//eventListModel.addAll(events);
+		events.stream().forEach(eventListModel::addElement);
 	}
 
 	@Override
