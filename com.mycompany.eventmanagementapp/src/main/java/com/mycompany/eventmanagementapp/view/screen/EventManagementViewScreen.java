@@ -282,9 +282,9 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 	@Override
 	public void showAllEvents(List<EventModel> events) {
 		 eventListModel.clear();
-		 eventListModel.addAll(events);
+		 //eventListModel.addAll(events);
 
-		//events.stream().forEach(eventListModel::addElement);
+		events.stream().forEach(eventListModel::addElement);
 	}
 
 	@Override
