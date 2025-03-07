@@ -1,36 +1,65 @@
+/**
+ * Unit tests for the ParticipantMySqlRepository class in the Event Management Application.
+ * 
+ * This class tests the functionality of the ParticipantMySqlRepository, which interacts with the MySQL database
+ * for CRUD (Create, Read, Update, Delete) operations related to ParticipantModel entities. The tests focus on:
+ * 
+ * 1. Verifying retrieval of all participants and individual participants by ID or email from the database.
+ * 2. Ensuring that new participants are added correctly and persisted in the database.
+ * 3. Validating that participants can be deleted and the repository reflects this change.
+ * 4. Testing for edge cases, such as null participants, and ensuring appropriate exceptions are thrown.
+ * 5. Checking that participants can be updated properly, and changes are reflected in the repository.
+ * 
+ * The tests utilize JUnit and Hibernate for testing the persistence layer and verifying expected behavior,
+ * including handling of database transactions and session management. Additionally, assertions from AssertJ are used
+ * to verify the correctness of the repository's actions.
+ * 
+ * Key Methods Tested:
+ * - getAllParticipants()
+ * - getParticipantById(long id)
+ * - getParticipantByEmail(String email)
+ * - addParticipant(ParticipantModel participant)
+ * - deleteParticipant(ParticipantModel participant)
+ * - updateParticipant(ParticipantModel participant)
+ * 
+ * The tests are set up with in memory test database using Hibernate and a custom configuration to ensure a controlled
+ * environment for the repository's functionality.
+ */
+
 package com.mycompany.eventmanagementapp.repository.mysql;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import org.assertj.core.api.Assertions;
-import org.hibernate.HibernateException;
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.assertj.core.api.Assertions;
+import org.hibernate.HibernateException;
 import org.hibernate.boot.MetadataSources;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.hibernate.boot.registry.StandardServiceRegistry;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import com.mycompany.eventmanagementapp.model.ParticipantModel;
 
 public class ParticipantMySqlRepositoryTest {
 
 	private SessionFactory sessionFactory;
+	
 	private static StandardServiceRegistry registry;
+	
 	private ParticipantMySqlRepository participantRepository;
 
 	private static final long PARTICIPANT_ID = 1;
+	
 	private static final String PARTICIPANT_NAME_1 = "John";
+	
 	private static final String PARTICIPANT_EMAIL_1 = "John@gmail.com";
+	
 	private static final String PARTICIPANT_NAME_2 = "Robert";
+	
 	private static final String PARTICIPANT_EMAIL_2 = "Robert@gmail.com";
 
 	@BeforeClass
@@ -65,13 +94,14 @@ public class ParticipantMySqlRepositoryTest {
 		//Setup
 		ParticipantModel participant1 = new ParticipantModel(PARTICIPANT_NAME_1, PARTICIPANT_EMAIL_1);
 		ParticipantModel participant2 = new ParticipantModel(PARTICIPANT_NAME_2, PARTICIPANT_EMAIL_2);
+		
 		//Exercise
 		long participantId1 = addParticipantToTestDatabase(participant1);
 		long participantId2 = addParticipantToTestDatabase(participant2);
-
 		ParticipantModel[] expectedParticipants = new ParticipantModel[] {
 				new ParticipantModel(participantId1, PARTICIPANT_NAME_1, PARTICIPANT_EMAIL_1),
 				new ParticipantModel(participantId2, PARTICIPANT_NAME_2, PARTICIPANT_EMAIL_2) };
+		
 		//Verify
 		Assertions.assertThat(participantRepository.getAllParticipants()).containsExactly(expectedParticipants);
 	}
@@ -89,11 +119,13 @@ public class ParticipantMySqlRepositoryTest {
 		//Setup
 		ParticipantModel participant1 = new ParticipantModel(PARTICIPANT_NAME_1, PARTICIPANT_EMAIL_1);
 		ParticipantModel participant2 = new ParticipantModel(PARTICIPANT_NAME_2, PARTICIPANT_EMAIL_2);
+		
 		//Exercise
 		addParticipantToTestDatabase(participant1);
 		long participantId2 = addParticipantToTestDatabase(participant2);
 		ParticipantModel expectedParticipant = new ParticipantModel(participantId2, PARTICIPANT_NAME_2,
 				PARTICIPANT_EMAIL_2);
+		
 		//Verify
 		ParticipantModel actualParticipant = participantRepository.getParticipantById(participantId2);
 		Assertions.assertThat(actualParticipant).isEqualTo(expectedParticipant);
@@ -112,11 +144,13 @@ public class ParticipantMySqlRepositoryTest {
 		//Setup
 		ParticipantModel participant1 = new ParticipantModel(PARTICIPANT_NAME_1, PARTICIPANT_EMAIL_1);
 		ParticipantModel participant2 = new ParticipantModel(PARTICIPANT_NAME_2, PARTICIPANT_EMAIL_2);
+		
 		//Exercise
 		addParticipantToTestDatabase(participant1);
 		long participantId2 = addParticipantToTestDatabase(participant2);
 		ParticipantModel expectedParticipant = new ParticipantModel(participantId2, PARTICIPANT_NAME_2,
 				PARTICIPANT_EMAIL_2);
+		
 		//Verify
 		ParticipantModel actualParticipant = participantRepository
 				.getParticipantByEmail(participant2.getParticipantEmail());
@@ -128,8 +162,10 @@ public class ParticipantMySqlRepositoryTest {
 	public void testAddParticipant() {
 		//Setup
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_NAME_1, PARTICIPANT_EMAIL_1);
+		
 		//Exercise
 		participantRepository.addParticipant(participant);
+		
 		//Verify
 		ParticipantModel[] expectedParticipant = new ParticipantModel[] { participant };
 		Assertions.assertThat(participantRepository.getAllParticipants()).containsExactly(expectedParticipant);
@@ -148,9 +184,11 @@ public class ParticipantMySqlRepositoryTest {
 	public void testDeleteParticipant() {
 		//Setup
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_NAME_1, PARTICIPANT_EMAIL_1);
+		
 		//Exercise
 		addParticipantToTestDatabase(participant);
 		participantRepository.deleteParticipant(participant);
+		
 		//Verify
 		Assertions.assertThat(participantRepository.getAllParticipants()).isEmpty();
 	}
@@ -168,11 +206,13 @@ public class ParticipantMySqlRepositoryTest {
 	public void testUpdateParticipant() {
 		//Setup
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_NAME_1, PARTICIPANT_EMAIL_1);
+		
 		//Exercise
 		long participantId = addParticipantToTestDatabase(participant);
 		ParticipantModel updatedParticipant = new ParticipantModel(participantId, PARTICIPANT_NAME_2,
 				PARTICIPANT_EMAIL_1);
 		participantRepository.updateParticipant(updatedParticipant);
+		
 		//Verify
 		Assertions.assertThat(participantRepository.getAllParticipants())
 				.containsExactly(new ParticipantModel[] { updatedParticipant });

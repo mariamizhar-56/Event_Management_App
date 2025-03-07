@@ -1,19 +1,39 @@
+/**
+ * ParticipantMySqlRepository is a repository class that manages ParticipantModel objects 
+ * in the MySQL database. It provides CRUD operations (Create, Read, Update, Delete) 
+ * using Hibernate ORM to interact with the database.
+ * <p>
+ * This class implements the ParticipantRepository interface and provides methods for adding, 
+ * updating, deleting, and retrieving participants from the database. It ensures proper 
+ * transaction management with the help of Hibernate's session and transaction mechanisms.
+ * Additionally, errors during database operations are logged using Log4j.
+ * <p>
+ * The following methods are provided:
+ * - addParticipant: Adds a new participant to the database.
+ * - updateParticipant: Updates an existing participant in the database.
+ * - deleteParticipant: Deletes a participant from the database.
+ * - getAllParticipants: Retrieves all participants from the database.
+ * - getParticipantById: Retrieves a specific participant by their unique ID.
+ * - getParticipantByEmail: Retrieves a participant by their email address.
+ */
+
 package com.mycompany.eventmanagementapp.repository.mysql;
+
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.SessionFactory;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.apache.logging.log4j.LogManager;
 
 import com.mycompany.eventmanagementapp.model.ParticipantModel;
 import com.mycompany.eventmanagementapp.repository.ParticipantRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-
-import java.util.List;
 
 public class ParticipantMySqlRepository implements ParticipantRepository {
 
     private static final Logger LOGGER = LogManager.getLogger(ParticipantMySqlRepository.class);
+    
     private SessionFactory sessionFactory;
 
     // Constructor to initialize the ParticipantMySqlRepository with the session factory
@@ -98,17 +118,6 @@ public class ParticipantMySqlRepository implements ParticipantRepository {
             session.close();
         }
     }
-
-    // Retrieves a list of participants associated with a specific event ID
-	/*
-	 * @Override public List<ParticipantModel> getParticipantsByEventId(long
-	 * eventId) { Session session = sessionFactory.openSession();
-	 * 
-	 * try { return session.
-	 * createQuery("select p from ParticipantModel p join p.events e where e.eventId = :eventId"
-	 * , ParticipantModel.class) .setParameter("eventId", eventId) .list(); }
-	 * finally { session.close(); } }
-	 */
 
     // Retrieves a participant by their email address
     @Override

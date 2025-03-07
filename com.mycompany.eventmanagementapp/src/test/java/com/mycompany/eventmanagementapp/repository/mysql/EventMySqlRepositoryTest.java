@@ -1,38 +1,69 @@
+/**
+ * Unit tests for the EventMySqlRepository class in the Event Management Application.
+ * 
+ * This class tests the functionality of the EventMySqlRepository, which interacts with the MySQL database
+ * for CRUD (Create, Read, Update, Delete) operations related to EventModel entities. The tests focus on:
+ * 
+ * 1. Verifying retrieval of all events and individual events by ID from the database.
+ * 2. Ensuring that new events are added correctly and persisted in the database.
+ * 3. Validating that events can be deleted and the repository reflects this change.
+ * 4. Testing for edge cases, such as null events, and ensuring appropriate exceptions are thrown.
+ * 5. Checking that events can be updated properly, and changes are reflected in the repository.
+ * 
+ * The tests utilize JUnit and Hibernate for testing the persistence layer and verifying expected behavior,
+ * including handling of database transactions and session management. Additionally, assertions from AssertJ are used
+ * to verify the correctness of the repository's actions.
+ * 
+ * Key Methods Tested:
+ * - getAllEvents()
+ * - getEventById(long id)
+ * - addEvent(EventModel event)
+ * - deleteEvent(EventModel event)
+ * - updateEvent(EventModel event)
+ * 
+ * The tests are set up with in memory test database using Hibernate and a custom configuration to ensure a controlled
+ * environment for the repository's functionality.
+ */
+
 package com.mycompany.eventmanagementapp.repository.mysql;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+import org.junit.Test;
+import org.junit.Before;
 import java.time.LocalDate;
-import java.util.List;
-
-import org.assertj.core.api.Assertions;
-import org.hibernate.HibernateException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.assertj.core.api.Assertions;
+import org.hibernate.HibernateException;
 import org.hibernate.boot.MetadataSources;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.hibernate.boot.registry.StandardServiceRegistry;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import com.mycompany.eventmanagementapp.model.EventModel;
 
 public class EventMySqlRepositoryTest {
 
 	private SessionFactory sessionFactory;
+	
 	private static StandardServiceRegistry registry;
+	
 	private EventMySqlRepository eventRepository;
 
 	private static final long EVENT_ID = 1;
+	
 	private static final String EVENT_NAME_1 = "Music Festival";
+	
 	private static final LocalDate EVENT_DATE_1 = LocalDate.now().plusDays(10);
+	
 	private static final String EVENT_LOCATION_1 = "Florence";
+	
 	private static final String EVENT_NAME_2 = "University Event";
+	
 	private static final LocalDate EVENT_DATE_2 = LocalDate.now().plusDays(20);
+	
 	private static final String EVENT_LOCATION_2 = "Milan";
 
 	@BeforeClass
@@ -67,13 +98,14 @@ public class EventMySqlRepositoryTest {
 		//Setup
 		EventModel event1 = new EventModel(EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1);
 		EventModel event2 = new EventModel(EVENT_NAME_2, EVENT_DATE_2, EVENT_LOCATION_2);
+		
 		//Exercise
 		long eventId1 = addEventToTestDatabase(event1);
 		long eventId2 = addEventToTestDatabase(event2);
-
 		EventModel[] expectedEvents = new EventModel[] {
 				new EventModel(eventId1, EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1),
 				new EventModel(eventId2, EVENT_NAME_2, EVENT_DATE_2, EVENT_LOCATION_2) };
+		
 		//Verify
 		Assertions.assertThat(eventRepository.getAllEvents()).containsExactly(expectedEvents);
 	}
@@ -91,10 +123,12 @@ public class EventMySqlRepositoryTest {
 		//Setup
 		EventModel event1 = new EventModel(EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1);
 		EventModel event2 = new EventModel(EVENT_NAME_2, EVENT_DATE_2, EVENT_LOCATION_2);
+		
 		//Exercise
 		addEventToTestDatabase(event1);
 		long eventId2 = addEventToTestDatabase(event2);
 		EventModel expectedEvent = new EventModel(eventId2, EVENT_NAME_2, EVENT_DATE_2, EVENT_LOCATION_2);
+		
 		//Verify
 		EventModel actualEvent = eventRepository.getEventById(eventId2);
 		Assertions.assertThat(actualEvent).isEqualTo(expectedEvent);
@@ -105,9 +139,11 @@ public class EventMySqlRepositoryTest {
 	public void testAddEvent() {
 		//Setup
 		EventModel event = new EventModel(EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1);
+		
 		//Exercise
 		eventRepository.addEvent(event);
 		EventModel[] expectedEvent = new EventModel[] { event };
+		
 		//Verify
 		Assertions.assertThat(eventRepository.getAllEvents()).containsExactly(expectedEvent);
 	}
@@ -125,9 +161,11 @@ public class EventMySqlRepositoryTest {
 	public void testDeleteEvent() {
 		//Setup
 		EventModel event = new EventModel(EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1);
+		
 		//Exercise
 		addEventToTestDatabase(event);
 		eventRepository.deleteEvent(event);
+		
 		//Verify
 		Assertions.assertThat(eventRepository.getAllEvents()).isEmpty();
 	}
@@ -145,10 +183,12 @@ public class EventMySqlRepositoryTest {
 	public void testUpdateEvent() {
 		//Setup
 		EventModel event = new EventModel(EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1);
+		
 		//Exercise
 		long eventId = addEventToTestDatabase(event);
 		EventModel updatedEvent = new EventModel(eventId, EVENT_NAME_1, EVENT_DATE_2, EVENT_LOCATION_2);
 		eventRepository.updateEvent(updatedEvent);
+		
 		//Verify
 		Assertions.assertThat(eventRepository.getAllEvents()).containsExactly(new EventModel[] { updatedEvent });
 	}
