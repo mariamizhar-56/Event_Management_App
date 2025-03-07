@@ -42,7 +42,7 @@ jobs:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         
     - name: Archive Unit Test Reports and Site
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       if: ${{ always() }}
       with:
         name: unit-test-reports-jdk-${{ matrix.java }}
@@ -85,7 +85,7 @@ jobs:
       working-directory: com.mycompany.eventmanagementapp
     
     - name: Archive Integration Test Reports and Site
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       if: ${{ always() }}
       with:
         name: integration-test-reports-jdk-${{ matrix.java }}
