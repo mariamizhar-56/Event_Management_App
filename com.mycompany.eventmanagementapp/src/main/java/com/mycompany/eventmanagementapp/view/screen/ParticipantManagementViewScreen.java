@@ -1,46 +1,79 @@
+/**
+ * ParticipantManagementViewScreen is the GUI screen for managing participants within the Event Management System.
+ * This screen allows the user to add, update, and delete participants, as well as view their associated events.
+ * The screen includes input fields for participant information, buttons for interaction, 
+ * and a list for displaying participants and their respective events.
+ * 
+ * The screen uses Swing components such as JList, JTextField, JButton, and JTextArea for the UI.
+ * It follows the MVC (Model-View-Controller) design pattern with a controller handling business logic and
+ * the view interacting with the user.
+ * 
+ * Key Features:
+ * - Add, update, delete participants
+ * - View participants and their events
+ * - Display error messages and notifications
+ * - Event-driven design with listeners for buttons and list selection changes
+ */
+
 package com.mycompany.eventmanagementapp.view.screen;
 
-import com.mycompany.eventmanagementapp.controller.EventController;
-import com.mycompany.eventmanagementapp.controller.ParticipantController;
+import java.awt.*;
+import javax.swing.*;
+import java.util.List;
+import java.awt.event.KeyEvent;
+import java.util.regex.Pattern;
+import java.awt.event.KeyAdapter;
+import java.awt.event.WindowEvent;
+import java.util.stream.IntStream;
+import java.awt.event.WindowAdapter;
+import javax.swing.border.EmptyBorder;
+
 import com.mycompany.eventmanagementapp.model.EventModel;
 import com.mycompany.eventmanagementapp.model.ParticipantModel;
 import com.mycompany.eventmanagementapp.view.ParticipantManagementView;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.IntStream;
+import com.mycompany.eventmanagementapp.controller.ParticipantController;
 
 public class ParticipantManagementViewScreen extends JFrame implements ParticipantManagementView {
 
 	private static final long serialVersionUID = 1L;
+
 	private JPanel contentPane;
-	private JTextField txtParticipantId, txtParticipantName, txtParticipantEmail, txtEventId;
-	private JButton btnAddParticipant, btnUpdateParticipant, btnDeleteParticipant, btnEventScreen, btnRefresh;
+
+	private JTextField txtParticipantId;
+
+	private JTextField txtParticipantName;
+
+	private JTextField txtParticipantEmail;
+
+	private JTextField txtEventId;
+
+	private JButton btnAddParticipant;
+
+	private JButton btnUpdateParticipant;
+
+	private JButton btnDeleteParticipant;
+
+	private JButton btnEventScreen;
+
+	private JButton btnRefresh;
+
 	private JList<ParticipantModel> participantList;
+
 	private DefaultListModel<ParticipantModel> participantListModel;
+
 	private JList<EventModel> eventListForParticipant;
-	private DefaultListModel<EventModel> eventListModel;
+
+	private DefaultListModel<EventModel> eventListModelForParticipant;
+
 	private JTextArea lblError;
-	private ParticipantController participantController;
+
+	private transient ParticipantController participantController;
+
 	private EventManagementViewScreen eventManagementView;
 
 	public DefaultListModel<ParticipantModel> getParticipantListModel() {
 		return participantListModel;
 	}
-
-	/*
-	 * public DefaultListModel<EventModel> getParticipantEventListModel() { return
-	 * eventListModel; }
-	 */
 
 	public void setParticipantController(ParticipantController participantController) {
 		this.participantController = participantController;
@@ -50,10 +83,10 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
-				eventListModel.removeAllElements();
+				eventListModelForParticipant.removeAllElements();
 				participantListModel.removeAllElements();
-				participantController.getAllEvents();
-				participantController.getAllParticipants();
+				getAllEventsForParticipantScreen();
+				getAllParticipants();
 			}
 		});
 
@@ -113,8 +146,8 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 		contentPane.add(participantScrollPane, gbc);
 
 		// **Nested Event List for Selected Participant**
-		eventListModel = new DefaultListModel<>();
-		eventListForParticipant = new JList<>(eventListModel);
+		eventListModelForParticipant = new DefaultListModel<>();
+		eventListForParticipant = new JList<>(eventListModelForParticipant);
 		eventListForParticipant.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		eventListForParticipant.setName("eventListForParticipant");
 		JScrollPane eventScrollPane = new JScrollPane(eventListForParticipant);
@@ -157,7 +190,7 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 		// **Error Label (Fixed Size)**
 		lblError = new JTextArea();
 		lblError.setName("lblError");
-		lblError.setText(" ");
+		clearParticipantErrorLabel();
 		lblError.setForeground(Color.RED);
 		lblError.setEditable(false);
 		lblError.setWrapStyleWord(true);
@@ -176,17 +209,11 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 		contentPane.add(lblError, gbc);
 
 		// **Button Actions**
-		btnAddParticipant.addActionListener(e -> new Thread(() -> {
-			addParticipant();
-		}).start());
-		btnUpdateParticipant.addActionListener(e -> new Thread(() -> {
-			updateParticipant();
-		}).start());
-		btnDeleteParticipant.addActionListener(e -> new Thread(() -> {
-			deleteParticipant();
-		}).start());
+		btnAddParticipant.addActionListener(e -> new Thread((this::addParticipant)).start());
+		btnUpdateParticipant.addActionListener(e -> new Thread((this::updateParticipant)).start());
+		btnDeleteParticipant.addActionListener(e -> new Thread((this::deleteParticipant)).start());
 		btnEventScreen.addActionListener(e -> openEventScreen());
-		btnRefresh.addActionListener(e -> RefreshScreen());
+		btnRefresh.addActionListener(e -> refreshScreen());
 
 		participantList.addListSelectionListener(e -> updateSelection());
 
@@ -254,18 +281,18 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 	private void openEventScreen() {
 		eventManagementView.setVisible(true);
 		this.dispose();
-		lblError.setText(" ");
-		clearFieldsAndButtons();
+		clearParticipantErrorLabel();
+		clearParticipantFieldsAndButtons();
 	}
 
-	private void RefreshScreen() {
-		lblError.setText(" ");
-		clearFieldsAndButtons();
-		participantController.getAllParticipants();
-		participantController.getAllEvents();
+	private void refreshScreen() {
+		clearParticipantErrorLabel();
+		clearParticipantFieldsAndButtons();
+		getAllParticipants();
+		getAllEventsForParticipantScreen();
 	}
-	
-	private void clearFieldsAndButtons() {
+
+	private void clearParticipantFieldsAndButtons() {
 		SwingUtilities.invokeLater(() -> {
 			txtParticipantId.setText("");
 			txtParticipantName.setText("");
@@ -283,67 +310,55 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 			txtParticipantId.setText(String.valueOf(selectedParticipant.getParticipantId()));
 			txtParticipantName.setText(selectedParticipant.getParticipantName());
 			txtParticipantEmail.setText(selectedParticipant.getParticipantEmail());
+			txtEventId.setText("");
 
-			eventListModel.clear();
-			selectedParticipant.getEvents().stream().forEach(eventListModel::addElement);
-			//eventListModel.addAll(selectedParticipant.getEvents());
+			clearEventListModel();
+			selectedParticipant.getEvents().stream().forEach(eventListModelForParticipant::addElement);
 			btnUpdateParticipant.setEnabled(true);
-			// btnDeleteParticipant.setEnabled(true);
 		} else {
 			btnUpdateParticipant.setEnabled(false);
+			clearParticipantFieldsAndButtons();
 		}
 	}
 
 	private void updateEventSelection() {
 		EventModel selectedEvent = eventListForParticipant.getSelectedValue();
 		ParticipantModel selectedParticipant = participantList.getSelectedValue();
-		if (selectedParticipant != null && selectedEvent != null) {
-			btnDeleteParticipant.setEnabled(true);
-		} else {
-			btnDeleteParticipant.setEnabled(false);
-		}
+		btnDeleteParticipant.setEnabled(selectedParticipant != null && selectedEvent != null);
 	}
 
 	// **Implementing All Required Methods from ParticipantManagementView**
 	@Override
 	public void showAllParticipants(List<ParticipantModel> participants) {
 		participantListModel.clear();
-		//participantListModel.addAll(participants);
 		participants.stream().forEach(participantListModel::addElement);
-		
 	}
 
 	@Override
 	public void showAllEvents(List<EventModel> events) {
-		eventListModel.clear();
-		//eventListModel.addAll(events);
-		events.stream().forEach(eventListModel::addElement);
+		clearEventListModel();
+		events.stream().forEach(eventListModelForParticipant::addElement);
 	}
 
 	@Override
 	public void participantAdded(ParticipantModel participant) {
 		SwingUtilities.invokeLater(() -> {
 			participantListModel.addElement(participant);
-			// participantController.getAllParticipants();
-			// participantController.getAllEvents();
-			lblError.setText(" ");
-			participantController.getAllEvents();
+			clearParticipantErrorLabel();
+			getAllEventsForParticipantScreen();
 		});
-		clearFieldsAndButtons();
+		clearParticipantFieldsAndButtons();
 	}
 
 	@Override
 	public void participantDeleted(ParticipantModel participant) {
 		SwingUtilities.invokeLater(() -> {
 			participantListModel.removeElement(participant);
-
-			// participantController.getAllParticipants();
-			// participantController.getAllEvents();
-			lblError.setText(" ");
-			participantController.getAllEvents();
+			clearParticipantErrorLabel();
+			getAllEventsForParticipantScreen();
 			participantList.clearSelection();
 		});
-		clearFieldsAndButtons();
+		clearParticipantFieldsAndButtons();
 	}
 
 	@Override
@@ -356,27 +371,39 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 			if (index == -1)
 				return;
 			participantListModel.set(index, participant);
-			// lblError.setText(" ");
-			// participantController.getAllParticipants();
-			lblError.setText(" ");
-			participantController.getAllEvents();
+			clearParticipantErrorLabel();
+			getAllEventsForParticipantScreen();
 			participantList.clearSelection();
 		});
-
-		clearFieldsAndButtons();
+		clearParticipantFieldsAndButtons();
 	}
 
 	@Override
 	public void showError(String message, ParticipantModel participant) {
 		SwingUtilities.invokeLater(() -> {
 			lblError.setText(message + ": " + participant);
-			participantController.getAllEvents();
-			participantController.getAllParticipants();
+			getAllEventsForParticipantScreen();
+			getAllParticipants();
 		});
 	}
 
 	public void setEventView(EventManagementViewScreen eventView) {
 		this.eventManagementView = eventView;
+	}
 
+	public void getAllEventsForParticipantScreen() {
+		participantController.getAllEvents();
+	}
+
+	public void getAllParticipants() {
+		participantController.getAllParticipants();
+	}
+
+	public void clearEventListModel() {
+		eventListModelForParticipant.clear();
+	}
+
+	private void clearParticipantErrorLabel() {
+		lblError.setText(" ");
 	}
 }
