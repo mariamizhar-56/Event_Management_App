@@ -15,7 +15,7 @@
 	<properties>
 		<!-- DB Root Password -->
 		<env-MYSQLROOTPASSWORD>test</env-MYSQLROOTPASSWORD>
-		
+
 		<jaxb-api-version>2.3.1</jaxb-api-version>
 		<sonar-maven-plugin-version>3.8.0.2131</sonar-maven-plugin-version>
 		<assertj-swing-junit-version>3.17.1</assertj-swing-junit-version>
@@ -26,7 +26,7 @@
 		<wait-log>ready for connections. Bind-address</wait-log>
 		<docker-maven-plugin-version>0.34.1</docker-maven-plugin-version>
 		<maven-surefire-report-plugin-version>3.2.5</maven-surefire-report-plugin-version>
-		
+
 		<!-- Dependency Properties -->
 		<logback-classic-version>1.2.3</logback-classic-version>
 		<mysql-version>8.0.33</mysql-version>
@@ -57,7 +57,7 @@
 
 		<!-- For each rule to be ignored, add another eXX and two corresponding
 		properties with eXX in the name as below -->
-		<sonar.issue.ignore.multicriteria>e11,e12,e13,e14</sonar.issue.ignore.multicriteria>
+		<sonar.issue.ignore.multicriteria>e11,e12,e13,e14,e15,e16,e17</sonar.issue.ignore.multicriteria>
 
 		<!-- Disable rule for "Inheritance tree of classes should not be too
 		deep" -->
@@ -77,14 +77,15 @@
 			**/*ViewScreen.java
 		</sonar.issue.ignore.multicriteria.e12.resourceKey>
 
-		<!-- Disable rule for "Tests should include assertions": SonarQube is
-		not aware of AssertJ Swing -->
+		<!-- Disable rule for "Tests should include assertions" on specific
+		tests -->
 		<sonar.issue.ignore.multicriteria.e13.ruleKey>
-			java:S2699
+			squid:S2699
 		</sonar.issue.ignore.multicriteria.e13.ruleKey>
 		<sonar.issue.ignore.multicriteria.e13.resourceKey>
-			**/*ViewScreen.java
+			**/*ViewScreenTest.java
 		</sonar.issue.ignore.multicriteria.e13.resourceKey>
+
 		<!-- Disable rule for "Use static access with
 		"javax.swing.WindowConstants" -->
 		<sonar.issue.ignore.multicriteria.e14.ruleKey>
@@ -93,6 +94,36 @@
 		<sonar.issue.ignore.multicriteria.e14.resourceKey>
 			**/*ViewScreen.java
 		</sonar.issue.ignore.multicriteria.e14.resourceKey>
+
+		<!-- Disable rule for "Make sure that using a regular expression is safe
+		here" This warning is of type review, I have reviewed it and now
+		ignoring this rule for Valid Date Pattern. -->
+		<sonar.issue.ignore.multicriteria.e15.ruleKey>
+			squid:S4784
+		</sonar.issue.ignore.multicriteria.e15.ruleKey>
+		<sonar.issue.ignore.multicriteria.e15.resourceKey>
+			**/EventManagementViewScreen.java
+		</sonar.issue.ignore.multicriteria.e15.resourceKey>
+		
+		<!-- Disable rule for "Make sure that using a regular expression is safe
+		here" This warning is of type review, I have reviewed it and now
+		ignoring this rule for Valid Email Pattern. -->
+		<sonar.issue.ignore.multicriteria.e16.ruleKey>
+			squid:S4784
+		</sonar.issue.ignore.multicriteria.e16.ruleKey>
+		<sonar.issue.ignore.multicriteria.e16.resourceKey>
+			**/ValidationConfigurations.java
+		</sonar.issue.ignore.multicriteria.e16.resourceKey>
+		
+		<!-- Disable rule for "Make sure that command line arguments are used safely
+		here." This warning is of type review, I have reviewed it and now
+		ignoring this rule for Application Main method arguments. -->
+		<sonar.issue.ignore.multicriteria.e17.ruleKey>
+			squid:S4823
+		</sonar.issue.ignore.multicriteria.e17.ruleKey>
+		<sonar.issue.ignore.multicriteria.e17.resourceKey>
+			**/EventManagementApp.java
+		</sonar.issue.ignore.multicriteria.e17.resourceKey>
 
 		<sonar.coverage.exclusions>
 			**/model/*.*,
@@ -103,7 +134,7 @@
 			${project.build.directory}/surefire-reports
 		</sonar.junit.reportPaths>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.assertj</groupId>
@@ -186,12 +217,12 @@
 	</dependencies>
 
 	<build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
@@ -269,9 +300,9 @@
 						<version>${jacoco-maven-plugin-version}</version>
 						<configuration>
 							<excludes>
-								<exclude>**/app/*.*</exclude>
+								<exclude>**/EventManagementApp.*</exclude>
 								<exclude>**/model/*.*</exclude>
-								<exclude>**/bdd/*.*</exclude>
+								
 							</excludes>
 						</configuration>
 						<executions>
@@ -439,7 +470,7 @@
 						<artifactId>maven-failsafe-plugin</artifactId>
 						<version>${maven-surefire-plugin-version}</version>
 						<executions>
-						<execution>
+							<execution>
 								<id>default-it</id>
 								<goals>
 									<goal>integration-test</goal>
@@ -481,7 +512,8 @@
 									for MySQL -->
 										</ports>
 										<env>
-											<MYSQL_ROOT_PASSWORD>${env-MYSQLROOTPASSWORD}</MYSQL_ROOT_PASSWORD>
+											<MYSQL_ROOT_PASSWORD>
+												${env-MYSQLROOTPASSWORD}</MYSQL_ROOT_PASSWORD>
 
 											<MYSQL_DATABASE>event_management_app</MYSQL_DATABASE>
 										</env>
@@ -524,9 +556,9 @@
 						<version>${jacoco-maven-plugin-version}</version>
 						<configuration>
 							<excludes>
-								<exclude>**/app/*.*</exclude>
+								<exclude>**/EventManagementApp.*</exclude>
 								<exclude>**/model/*.*</exclude>
-								<exclude>**/bdd/*.*</exclude>
+								
 							</excludes>
 						</configuration>
 						<executions>
