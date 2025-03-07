@@ -1,24 +1,65 @@
+/**
+ * ParticipantController handles the business logic for managing participants within the Event Management Application.
+ * It acts as a bridge between the Participant Management View, the Participant Repository, and the Event Repository,
+ * handling operations such as:
+ * - Fetching all participants
+ * - Adding new participants and associating them with events
+ * - Updating existing participants
+ * - Deleting participants from events, with checks for associated events
+ *
+ * The controller ensures that all participant-related actions are validated, and it communicates the results back to the view.
+ * It also handles error cases, such as when a participant already exists, when a participant is not associated with an event, 
+ * or when the participant's input is invalid.
+ *
+ * Key functionalities:
+ * - Retrieves all participants and events from the repositories and displays them in the view.
+ * - Adds new participants and associates them with events, ensuring that there are no duplicates or conflicts.
+ * - Updates existing participants, ensuring the input is valid and the participant exists.
+ * - Deletes participants from events, checking for any associations with other events.
+ * - Provides detailed logging of each action and validation process.
+ *
+ * Dependencies:
+ * - ParticipantManagementView: The view layer for displaying participants and error messages.
+ * - ParticipantRepository: The repository layer for accessing and modifying participant data in the database.
+ * - EventRepository: The repository layer for accessing and modifying event data in the database.
+ * - ValidationConfigurations: A utility class used for validating participant data, such as name and email.
+ *
+ * Logging:
+ * - Logs various levels of information (info, warn, debug, error) for all operations to help track actions and errors in the system.
+ *
+ * Methods:
+ * - getAllParticipants: Fetches and displays all participants.
+ * - getAllEvents: Fetches and displays all events.
+ * - addParticipant: Adds a new participant, validates the input, and associates them with the selected event.
+ * - updateParticipant: Updates an existing participant after validating the input.
+ * - deleteParticipant: Removes a participant from an event, and deletes them if no events remain associated with them.
+ * - validateParticipant: Validates the participant data (name, email) before any operation.
+ */
+
 package com.mycompany.eventmanagementapp.controller;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.mycompany.eventmanagementapp.model.EventModel;
 import com.mycompany.eventmanagementapp.model.ParticipantModel;
-import com.mycompany.eventmanagementapp.repository.ParticipantRepository;
 import com.mycompany.eventmanagementapp.repository.EventRepository;
-import com.mycompany.eventmanagementapp.controller.utils.ValidationConfigurations;
-import com.mycompany.eventmanagementapp.controller.utils.ValidationException;
 import com.mycompany.eventmanagementapp.view.ParticipantManagementView;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.List;
+import com.mycompany.eventmanagementapp.repository.ParticipantRepository;
+import com.mycompany.eventmanagementapp.controller.utils.ValidationException;
+import com.mycompany.eventmanagementapp.controller.utils.ValidationConfigurations;
 
 public class ParticipantController {
 
 	private static final Logger LOGGER = LogManager.getLogger(ParticipantController.class);
+	
 	private final ParticipantRepository participantRepository;
+	
 	private final EventRepository eventRepository;
+	
 	private ParticipantManagementView participantManagementView;
+	
+	private static final String EVENT_PARTICIPANT_NULL_ERROR = "Selected event or participant is null";
 
 	public ParticipantController(ParticipantManagementView participantManagementView,
 			ParticipantRepository participantRepository, EventRepository eventRepository) {
@@ -29,23 +70,26 @@ public class ParticipantController {
 				"ParticipantController initialized with ParticipantManagementView, ParticipantRepository and EventRepository");
 	}
 
+	//Get All Participants
 	public void getAllParticipants() {
 		LOGGER.info("Fetching all participants.");
 		participantManagementView.showAllParticipants(participantRepository.getAllParticipants());
 	}
 
+	//Get All Events
 	public void getAllEvents() {
 		LOGGER.info("Fetching all events.");
 		participantManagementView.showAllEvents(eventRepository.getAllEvents());
 	}
 
+	//Add Participant method for Participant Controller
 	public synchronized void addParticipant(ParticipantModel participant, EventModel selectedEvent) {
 		LOGGER.info("Adding a new participant: {}", participant);
 
 		// Check for null values to avoid null pointer exceptions
 		if (selectedEvent == null || participant == null) {
-			LOGGER.error("Selected event or participant is null");
-			participantManagementView.showError("Selected event or participant is null", participant);
+			LOGGER.error(EVENT_PARTICIPANT_NULL_ERROR);
+			participantManagementView.showError(EVENT_PARTICIPANT_NULL_ERROR, participant);
 			return;
 		}
 
@@ -99,6 +143,7 @@ public class ParticipantController {
 		LOGGER.info("New Participant added and associated with event successfully: {}", participant);
 	}
 
+	//Update Participant method for Participant Controller
 	public synchronized void updateParticipant(ParticipantModel participant) {
 		LOGGER.info("Updating participant: {}", participant);
 
@@ -131,13 +176,14 @@ public class ParticipantController {
 		LOGGER.info("Participant updated successfully: {}", participant);
 	}
 
+	//Delete Participant method for Participant Controller
 	public synchronized void deleteParticipant(ParticipantModel participant, EventModel selectedEvent) {
 		LOGGER.info("Deleting participant : {}", participant);
 
 		// Check for null values to avoid null pointer exceptions
 		if (selectedEvent == null || participant == null) {
-			LOGGER.error("Selected event or participant is null");
-			participantManagementView.showError("Selected event or participant is null", participant);
+			LOGGER.error(EVENT_PARTICIPANT_NULL_ERROR);
+			participantManagementView.showError(EVENT_PARTICIPANT_NULL_ERROR, participant);
 			return;
 		}
 		//Fetch fresh Event object from Database for proper removal of Participant and Event linking
@@ -172,13 +218,13 @@ public class ParticipantController {
 			participantRepository.deleteParticipant(existingParticipant);
 			participantManagementView.participantDeleted(existingParticipant);
 			LOGGER.info("Participant deleted successfully: {}", existingParticipant);
-			return;
 		} else {
 			participantManagementView.participantUpdated(existingParticipant);
 			LOGGER.info("Participant association with selected event removed successfully: {}", existingParticipant);
 		}
 	}
 
+	//Validate Participant Method for validation of Participant input
 	private boolean validateParticipant(ParticipantModel participant) {
 		LOGGER.debug("Validating participant: {}", participant);
 
