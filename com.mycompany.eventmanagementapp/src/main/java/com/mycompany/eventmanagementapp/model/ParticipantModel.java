@@ -1,9 +1,44 @@
+/**
+ * The ParticipantModel class represents a participant in the Event Management Application.
+ * It contains the details of a participant including their name, email, and a set of events they are associated with.
+ * This class is annotated as an entity for JPA (Java Persistence API), making it a persistent class 
+ * that can be mapped to the "participant" table in a relational database. It defines a many-to-many 
+ * relationship with the EventModel, meaning that each participant can be associated with multiple events 
+ * and each event can have multiple participants.
+ *
+ * Key properties:
+ * - participantId: The unique identifier for the participant (primary key).
+ * - participantName: The name of the participant.
+ * - participantEmail: The email of the participant, which must be unique.
+ * - events: A set of events associated with this participant.
+ *
+ * Constructors:
+ * - Default constructor: Initializes the ParticipantModel object.
+ * - Constructor with participantId, participantName, and participantEmail.
+ * - Constructor with participantName and participantEmail (without participantId).
+ *
+ * Methods:
+ * - Add and remove events: Utility methods to manage the relationship between 
+ *   participants and events.
+ * - Getters and setters: For all the properties.
+ * - hashCode and equals: Used to compare ParticipantModel objects and generate hash codes for collections.
+ * - toString: Provides a string representation of the participant.
+ *
+ * JPA annotations:
+ * - @Entity: Marks this class as a JPA entity.
+ * - @Table: Specifies the table name ("participant") for mapping.
+ * - @Id and @GeneratedValue: Marks participantId as the primary key and defines its generation strategy.
+ * - @Column: Specifies the columns for participantName and participantEmail.
+ * - @ManyToMany: Defines the many-to-many relationship with events, with the mappedBy attribute indicating 
+ *   that the relationship is managed by the EventModel class.
+ */
+
 package com.mycompany.eventmanagementapp.model;
 
+import java.util.Set;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "participant")
