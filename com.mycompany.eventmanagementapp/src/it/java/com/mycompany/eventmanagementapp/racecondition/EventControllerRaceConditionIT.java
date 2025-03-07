@@ -1,3 +1,22 @@
+/**
+ * This class contains integration tests for the race conditions in the EventController of the Event Management Application.
+ * The tests ensure that concurrent operations on events (add, update, delete) are handled correctly by the EventController,
+ * and no data inconsistencies or concurrency issues occur.
+ *
+ * The tests simulate multiple threads attempting to perform the same operation on an event concurrently. The operations 
+ * tested include:
+ * - Adding an event concurrently.
+ * - Updating an event concurrently.
+ * - Deleting an event concurrently.
+ *
+ * Test Containers are used to spin up a MySQL container for isolated testing, while Hibernate ORM handles database interactions.
+ * The tests use Awaitility to ensure that all threads complete before performing assertions, and they verify that only the 
+ * expected event data remains after concurrency operations.
+ *
+ * The primary purpose of these tests is to ensure the stability and correctness of the EventController when multiple users 
+ * interact with the application concurrently.
+ */
+
 package com.mycompany.eventmanagementapp.racecondition;
 
 import org.junit.Test;

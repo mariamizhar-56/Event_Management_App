@@ -1,3 +1,22 @@
+/**
+ * Integration test class for testing the EventController in the Event Management Application.
+ * This class verifies the functionality of the EventController, which manages events in the system, 
+ * ensuring that events are correctly retrieved, added, updated, and deleted.
+ * 
+ * The tests cover various scenarios such as:
+ * - Retrieving and displaying all events in the view.
+ * - Adding a new event to the system and ensuring the view is updated.
+ * - Updating an existing event and ensuring the changes are reflected in the view.
+ * - Deleting an event, including handling cases where the event has participants associated with it.
+ * 
+ * The tests are performed with a MySQL database managed by TestContainers. The class uses Hibernate for 
+ * database interaction and Mockito for mocking the view layer to ensure proper communication between the 
+ * controller and the view.
+ * 
+ * Each test verifies that the controller interacts correctly with the model and updates the view accordingly,
+ * ensuring the expected behavior of event management actions (add, update, delete).
+ */
+
 package com.mycompany.eventmanagementapp.controller;
 
 import org.junit.Test;

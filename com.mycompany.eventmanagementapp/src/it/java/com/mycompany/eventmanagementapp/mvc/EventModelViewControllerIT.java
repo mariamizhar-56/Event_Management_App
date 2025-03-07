@@ -1,3 +1,21 @@
+/**
+ * This class contains integration tests for the Event Management functionality in the Event Management Application.
+ * The tests validate the correct functionality of adding, updating, and deleting events through the UI, ensuring that 
+ * the operations are performed correctly in conjunction with the backend database and event management logic.
+ *
+ * The tests are focused on:
+ * - Adding a new event through the UI and verifying its presence in the repository.
+ * - Updating an existing event through the UI and verifying the updated data in the repository.
+ * - Deleting an event through the UI and verifying that it is removed from the repository.
+ *
+ * The tests use TestContainers to spin up a MySQL container, Hibernate ORM for database interactions, and AssertJ Swing for 
+ * interacting with the Swing-based UI. The tests assert that after performing actions in the UI, the correct changes are made 
+ * to the event data in the repository and the UI reflects these changes.
+ *
+ * The primary purpose of these tests is to verify that the event management functionality works as expected, 
+ * both in terms of UI interactions and backend operations, ensuring data consistency and correct UI behavior.
+ */
+
 package com.mycompany.eventmanagementapp.mvc;
 
 import org.junit.Test;

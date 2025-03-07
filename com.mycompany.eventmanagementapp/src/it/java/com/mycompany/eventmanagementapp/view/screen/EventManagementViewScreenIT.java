@@ -1,3 +1,19 @@
+/**
+ * This class contains the integration tests for the Event Management view of the Event Management Application.
+ * It uses AssertJ-Swing, JUnit, and TestContainers for testing the GUI and database interactions.
+ * The tests cover various aspects of the event management functionality, such as adding, updating, deleting events,
+ * and validating the display of events in the GUI.
+ * 
+ * The key operations tested include:
+ * - Adding a new event and verifying successful addition.
+ * - Handling errors when adding or updating events with invalid data (e.g., past event date).
+ * - Updating event details and verifying the changes in the UI.
+ * - Deleting events and ensuring they are removed from the list.
+ * 
+ * The class also sets up and tears down a MySQL database using TestContainers before and after the tests, ensuring that each 
+ * test runs in an isolated environment.
+ */
+
 package com.mycompany.eventmanagementapp.view.screen;
 
 import org.junit.Test;
