@@ -1,10 +1,34 @@
+/**
+ * Utility class providing common validation functions used throughout the Event Management Application.
+ * This class includes static methods to validate:
+ * - Strings (to ensure they are not null or empty)
+ * - Dates (to ensure they are not null and not in the past)
+ * - Email addresses (to ensure they are not null, not empty, and in a valid format)
+ *
+ * The class uses regular expressions for email validation and throws a custom ValidationException
+ * with appropriate error messages when validation fails.
+ *
+ * Logging is provided for each validation to track the success or failure of each operation.
+ * The class is designed to be stateless, and all methods are static. Therefore, it cannot be instantiated.
+ *
+ * Key validation methods:
+ * - validateString: Validates that a given string is not null or empty.
+ * - validateDate: Validates that a given date is not null and is not in the past.
+ * - validateEmail: Validates that a given email string matches the correct email format.
+ *
+ * Exceptions:
+ * - ValidationException: Thrown if any validation fails, with a descriptive error message.
+ *
+ * Dependencies:
+ * - Logger: Uses Log4j for logging validation steps and errors.
+ */
+
 package com.mycompany.eventmanagementapp.controller.utils;
 
 import java.time.LocalDate;
 import java.util.regex.Pattern;
-
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 // Utility class for common validation functions (e.g., string validation, Integer validation, date validation, email validation)
 public class ValidationConfigurations {
@@ -13,11 +37,8 @@ public class ValidationConfigurations {
 	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
 	// Private constructor to prevent instantiation since this is a utility class
-	
-	  private ValidationConfigurations() {
-	  
-	  }
-	 
+	private ValidationConfigurations() {
+	}
 
 	// Validates that a required string is not null or empty
 	// Throws a ValidationException if the string is invalid
