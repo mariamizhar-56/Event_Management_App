@@ -558,7 +558,6 @@
 							<excludes>
 								<exclude>**/EventManagementApp.*</exclude>
 								<exclude>**/model/*.*</exclude>
-								
 							</excludes>
 						</configuration>
 						<executions>

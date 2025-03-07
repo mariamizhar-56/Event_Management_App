@@ -1,0 +1,48 @@
+name: Java CI with Maven - Unit Testing with Coverage on Windows and macOS
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+        java-version: [8, 11]
+        exclude:
+          - os: macos-latest
+            java-version: 11
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'  
+        java-version: ${{ matrix.java-version }}
+    
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ matrix.java-version }}-${{ hashFiles('**/pom.xml', '**/*.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-m2-
+    
+    - name: Run Unit Tests
+      run: mvn verify -Punit-test
+      working-directory: com.mycompany.eventmanagementapp
+
+    - name: Archive Test Reports
+      uses: actions/upload-artifact@v3
+      if: ${{ always() }}
+      with:
+        name: test-reports-${{ matrix.os }}-jdk-${{ matrix.java-version }}
+        path: |
+          com.mycompany.eventmanagementapp/target/surefire-reports/*
+          com.mycompany.eventmanagementapp/target/site/jacoco/*
+          com.mycompany.eventmanagementapp/target/pit-reports/*
+          com.mycompany.eventmanagementapp/target/site/*
