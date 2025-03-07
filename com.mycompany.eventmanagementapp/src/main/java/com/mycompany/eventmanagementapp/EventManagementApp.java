@@ -1,27 +1,58 @@
+/**
+ * EventManagementApp is the main entry point for the Event Management Swing Application.
+ * This application allows users to manage events and participants, including the ability to:
+ * - Add, update, and delete events
+ * - Add, update, and delete participants
+ * - Link participants to events
+ * 
+ * The application is built using Java Swing for the user interface and Hibernate for database interaction.
+ * It uses picocli for command-line argument parsing and logging with Apache Log4j for error reporting.
+ * 
+ * The core components include:
+ * - EventController: Manages business logic related to event operations.
+ * - ParticipantController: Manages business logic related to participant operations.
+ * - EventManagementViewScreen: The UI screen for managing events.
+ * - ParticipantManagementViewScreen: The UI screen for managing participants.
+ * - EventMySqlRepository: Handles database interactions related to events.
+ * - ParticipantMySqlRepository: Handles database interactions related to participants.
+ * 
+ * The application supports different environments, such as:
+ * - Default environment: Uses the default Hibernate configuration.
+ * - Test environment: Configured for testing purposes with a separate Hibernate configuration file.
+ * 
+ * The program is initialized in a thread-safe manner using the EventQueue to ensure that Swing operations are executed on the Event Dispatch Thread (EDT).
+ * 
+ * Command-line options:
+ * - --mysql-DB_URL: URL for the MySQL database.
+ * - --mysql-user: MySQL database username.
+ * - --mysql-pass: MySQL database password.
+ * 
+ * Logging:
+ * - The application logs errors using Apache Log4j for debugging and tracking issues during runtime.
+ */
+
 package com.mycompany.eventmanagementapp;
 
+import picocli.CommandLine;
 import java.awt.EventQueue;
-import java.util.concurrent.Callable;
-
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Command;
 import org.hibernate.SessionFactory;
+import java.util.concurrent.Callable;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.boot.MetadataSources;
+import org.apache.logging.log4j.LogManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import com.mycompany.eventmanagementapp.controller.EventController;
 import com.mycompany.eventmanagementapp.controller.ParticipantController;
 import com.mycompany.eventmanagementapp.repository.mysql.EventMySqlRepository;
-import com.mycompany.eventmanagementapp.repository.mysql.ParticipantMySqlRepository;
 import com.mycompany.eventmanagementapp.view.screen.EventManagementViewScreen;
+import com.mycompany.eventmanagementapp.repository.mysql.ParticipantMySqlRepository;
 import com.mycompany.eventmanagementapp.view.screen.ParticipantManagementViewScreen;
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 
 // Main class for the Event Management Swing Application
 @Command(mixinStandardHelpOptions = true)
