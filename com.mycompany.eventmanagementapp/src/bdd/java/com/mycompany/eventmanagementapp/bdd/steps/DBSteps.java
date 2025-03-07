@@ -1,3 +1,15 @@
+/**
+ * DBSteps class handles the database interactions for the Event Management App during the Cucumber BDD tests.
+ * It sets up the test database, defines methods for inserting, updating, and removing events and participants, 
+ * and manages the connection to the database using Hibernate and MySQL containers.
+ * 
+ * Key functionalities:
+ * - Configures and manages the test database using TestContainers (MySQL container).
+ * - Defines the Cucumber step definitions for setting up the database with event and participant data.
+ * - Provides methods for adding test events and participants, and simulating actions like adding/removing participants 
+ *   from events during test execution.
+ */
+
 package com.mycompany.eventmanagementapp.bdd.steps;
 
 import java.util.List;
@@ -206,20 +218,22 @@ public class DBSteps {
 	public void the_participant_is_in_the_meantime_removed_from_that_event() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
+		
 		EventModel associatedEvent = SecondParticipant.getEvents().iterator().next();
 		EventModel existingEvent = session.get(EventModel.class, associatedEvent.getEventId());
 		SecondParticipant.removeEvent(existingEvent);
 		SecondParticipant = (ParticipantModel) session.merge(SecondParticipant);
 		session.delete(SecondParticipant);
+		
 		session.getTransaction().commit();
 		session.close();
 	}
 
 	private void addTestEventToDatabase(EventModel event) {
 		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
+		Transaction transaction = session.beginTransaction();
 		session.save(event);
-		tx.commit();
+		transaction.commit();
 		session.close();
 	}
 
