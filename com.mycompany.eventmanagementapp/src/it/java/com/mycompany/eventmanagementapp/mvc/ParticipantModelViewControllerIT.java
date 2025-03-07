@@ -1,3 +1,22 @@
+/**
+ * This class contains integration tests for the Participant Management functionality in the Event Management Application.
+ * The tests validate the correct functionality of adding, updating, and deleting participants through the UI, ensuring that 
+ * the operations are performed correctly in conjunction with the backend database and event management logic.
+ *
+ * The tests are focused on:
+ * - Adding a new participant to an event.
+ * - Adding an existing participant to a new event.
+ * - Updating participant details, such as name.
+ * - Deleting a participant from one or more events, ensuring the logic handles both single-event and multi-event participants correctly.
+ *
+ * The tests use TestContainers to spin up a MySQL container, Hibernate ORM for database interactions, and AssertJ Swing for 
+ * interacting with the Swing-based UI. The tests assert that after performing actions in the UI, the correct changes are made 
+ * to the participant data in the repository and the UI reflects these changes.
+ *
+ * The primary purpose of these tests is to verify that the participant management functionality works as expected, 
+ * both in terms of UI interactions and backend operations, ensuring data consistency and correct UI behavior.
+ */
+
 package com.mycompany.eventmanagementapp.mvc;
 
 import org.junit.Test;
@@ -211,13 +230,13 @@ public class ParticipantModelViewControllerIT extends AssertJSwingJUnitTestCase 
 
 		// Exercise
 		window.list(LIST_PARTICIPANT).selectItem(0);
-		window.list(LIST_EVENT).selectItem(0); // Selecting event1 for Participate Deletion
+		window.list(LIST_EVENT).selectItem(0); // Selecting event2 for Participate Deletion, by default latest added event will come first in List View.
 		window.button(JButtonMatcher.withText(BTN_DELETE_PARTICIPANT)).click();
 
 		// Verify
 		await().atMost(10, TimeUnit.SECONDS).untilAsserted(
 				() -> assertThat(participantRepository.getParticipantById(participant.getParticipantId()).getEvents())
-						.containsOnly(event2));
+						.containsOnly(event1));
 	}
 
 	// Test Delete Participant From UI

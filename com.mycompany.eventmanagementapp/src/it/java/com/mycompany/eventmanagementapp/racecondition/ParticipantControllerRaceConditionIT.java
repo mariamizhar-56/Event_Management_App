@@ -1,3 +1,21 @@
+/**
+ * This class contains integration tests for the race conditions in the ParticipantController of the Event Management Application.
+ * It uses JUnit, TestContainers, Mocking (Mockito), and AssertJ for testing concurrency and database interactions.
+ *
+ * The main purpose of these tests is to simulate concurrent operations on the Participant entity and ensure that the application
+ * behaves correctly under race conditions. The tests specifically target:
+ * - Adding a participant concurrently from multiple threads.
+ * - Updating a participant concurrently and ensuring the changes are correctly persisted.
+ * - Deleting a participant concurrently and ensuring that the deletion occurs without errors.
+ *
+ * Test Containers are used to spin up a MySQL container for isolated testing with Hibernate ORM for database interactions.
+ * The tests simulate multiple concurrent actions (add, update, delete) and use Awaitility to ensure that all threads complete
+ * before performing verification.
+ * 
+ * The class ensures that the application's ParticipantController handles concurrent database operations correctly without data 
+ * inconsistencies or race conditions.
+ */
+
 package com.mycompany.eventmanagementapp.racecondition;
 
 import org.junit.Test;

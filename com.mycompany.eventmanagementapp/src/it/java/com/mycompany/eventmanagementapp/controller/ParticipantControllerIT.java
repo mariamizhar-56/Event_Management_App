@@ -1,3 +1,21 @@
+/**
+ * Integration test class for testing the ParticipantController in the Event Management Application.
+ * This class tests the controller's interaction with the participant model and view, ensuring that 
+ * participants are properly added, updated, and deleted from the system.
+ * 
+ * The tests ensure that the controller handles various scenarios such as:
+ * - Adding a participant to an event, checking if the event exists and the participant is correctly associated.
+ * - Handling cases where a participant already exists and is either associated or not associated with the selected event.
+ * - Updating participant details and verifying the update is reflected in the system.
+ * - Deleting a participant from an event, with special handling for participants associated with one or multiple events.
+ * 
+ * The tests are run with a MySQL database managed by TestContainers, and Hibernate is used to interact with the database.
+ * Mockito is used for mocking the view layer to ensure that the controller's actions are correctly communicated to the view.
+ * 
+ * Each test verifies the appropriate interaction between the controller, model, and view, ensuring data consistency 
+ * and correct UI behavior for managing participants in the event management system.
+ */
+
 package com.mycompany.eventmanagementapp.controller;
 
 import org.junit.Test;
@@ -20,7 +38,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import com.mycompany.eventmanagementapp.model.EventModel;
 import com.mycompany.eventmanagementapp.model.ParticipantModel;
-import com.mycompany.eventmanagementapp.view.EventManagementView;
 import com.mycompany.eventmanagementapp.repository.EventRepository;
 import com.mycompany.eventmanagementapp.view.ParticipantManagementView;
 import com.mycompany.eventmanagementapp.repository.ParticipantRepository;
@@ -43,8 +60,6 @@ public class ParticipantControllerIT {
 	private static StandardServiceRegistry registry;
 
 	private ParticipantController participantController;
-
-	private static final long DEFAULT_EVENT_ID = -1;
 
 	private static final long EVENT_ID = 1;
 

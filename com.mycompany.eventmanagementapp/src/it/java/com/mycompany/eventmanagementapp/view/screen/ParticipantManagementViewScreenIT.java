@@ -1,3 +1,19 @@
+/**
+ * This class contains the integration tests for the Participant Management view of the Event Management Application.
+ * It uses AssertJ-Swing and JUnit for testing the GUI interactions and MySQLContainer from TestContainers for database management.
+ * The tests cover various aspects of the participant management functionality, such as adding, updating, deleting participants,
+ * and validating the display of events and participants in the GUI.
+ * 
+ * The key operations tested include:
+ * - Adding a new participant and verifying successful addition.
+ * - Handling errors when adding or updating participants with invalid data.
+ * - Updating participant details and verifying the changes in the UI.
+ * - Deleting participants and ensuring they are removed from the list.
+ * 
+ * The class also sets up and tears down a MySQL database using TestContainers before and after the tests, ensuring that each 
+ * test runs in an isolated environment.
+ */
+
 package com.mycompany.eventmanagementapp.view.screen;
 
 import org.junit.Test;
@@ -55,8 +71,6 @@ public class ParticipantManagementViewScreenIT extends AssertJSwingJUnitTestCase
 	private static final LocalDate EVENT_DATE_1 = LocalDate.now().plusDays(10);
 	
 	private static final String EVENT_LOCATION_1 = "Florence";
-	
-	private static final long EVENT_ID_2 = 2;
 	
 	private static final String EVENT_NAME_2 = "University Event";
 	
