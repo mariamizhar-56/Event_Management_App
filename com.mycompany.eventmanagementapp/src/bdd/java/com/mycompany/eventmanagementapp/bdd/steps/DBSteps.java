@@ -256,7 +256,6 @@ public class DBSteps {
 			existingParticipant.addEvent(existingEvent);
 			session.update(existingParticipant);
 			session.update(existingEvent);
-			participant = existingParticipant;
 		}
 		
 		session.getTransaction().commit();

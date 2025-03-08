@@ -314,21 +314,15 @@ public class EventManagementAppSteps {
 
 	@When("The user enters the following values in the text fields")
 	public void the_user_enters_the_following_values_in_the_text_fields(List<Map<String, String>> values) {
-		values.stream().flatMap(m -> m.entrySet().stream()).forEach(e -> {
-			if (e.getKey().contains(TXT_EVENT_NAME)) {
-				updateTextBox(e.getKey(), e.getValue());
-			} else if (e.getKey().contains(TXT_EVENT_LOCATION)) {
-				updateTextBox(e.getKey(), e.getValue());
-			} else if ((e.getKey().contains(TXT_EVENT_DATE))) {
-				updateTextBox(e.getKey(), e.getValue());
-			} else if ((e.getKey().contains(TXT_PARTICIPANT_NAME))) {
-				updateTextBox(e.getKey(), e.getValue());
-			} else if ((e.getKey().contains(TXT_PARTICIPANT_EMAIL))) {
-				updateTextBox(e.getKey(), e.getValue());
-			} else if ((e.getKey().contains(TXT_EVENT_ID))) {
-				updateTextBox(e.getKey(), e.getValue());
-			}
-		});
+	    values.stream()
+	          .flatMap(m -> m.entrySet().stream())
+	          .filter(e -> e.getKey().contains(TXT_EVENT_NAME) || 
+	                      e.getKey().contains(TXT_EVENT_LOCATION) || 
+	                      e.getKey().contains(TXT_EVENT_DATE) || 
+	                      e.getKey().contains(TXT_PARTICIPANT_NAME) || 
+	                      e.getKey().contains(TXT_PARTICIPANT_EMAIL) || 
+	                      e.getKey().contains(TXT_EVENT_ID))
+	          .forEach(e -> updateTextBox(e.getKey(), e.getValue()));
 	}
 
 	@Then("All values are populated")

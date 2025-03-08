@@ -318,7 +318,7 @@ public class ParticipantControllerRaceConditionTest {
 		// Temporary storage simulating the database
 	    List<ParticipantModel> participants = new ArrayList<>();
 	 // Temporary storage for updated participants
-	    List<ParticipantModel> UpdatedParticipants = new ArrayList<>();
+	    List<ParticipantModel> updatedParticipants = new ArrayList<>();
 	    // Create and add participant to the list
 	    ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
 	    participants.add(participant);
@@ -327,7 +327,7 @@ public class ParticipantControllerRaceConditionTest {
 
 	    doAnswer(invocation -> {
 	    	participants.remove(participant);
-	    	UpdatedParticipants.add(participant);
+	    	updatedParticipants.add(participant);
 	        return null;
 	    }).when(participantRepository).updateParticipant(any(ParticipantModel.class));
 	    // Simulate concurrent updates by creating multiple threads
@@ -338,7 +338,7 @@ public class ParticipantControllerRaceConditionTest {
 	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 	    // Ensure that the participant is updated correctly
 	    assertThat(participants).isEmpty();
-	    assertThat(UpdatedParticipants).containsExactly(participant);
+	    assertThat(updatedParticipants).containsExactly(participant);
 	    // Verify that the update method was called only once
 	    verify(participantRepository, times(1)).updateParticipant(any(ParticipantModel.class));
 	}
