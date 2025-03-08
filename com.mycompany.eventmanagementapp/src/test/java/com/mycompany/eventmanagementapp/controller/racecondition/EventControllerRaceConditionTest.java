@@ -104,10 +104,10 @@ public class EventControllerRaceConditionTest {
 	    }).when(eventRepository).addEvent(any(EventModel.class));
 	    // Simulate concurrent addition by creating multiple threads
 	    List<Thread> threads = IntStream.range(0, 10)
-	            .mapToObj(i -> new Thread(() -> eventController.addEvent(event))).peek(t -> t.start())
+	            .mapToObj(i -> new Thread(() -> eventController.addEvent(event))).peek(Thread::start)
 	            .collect(Collectors.toList());
 	    // Wait for all threads to finish execution
-	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 	    // Ensure that only one event was added to the list
 	    assertThat(eventList).containsExactly(event);
 	}
@@ -132,10 +132,10 @@ public class EventControllerRaceConditionTest {
 	    }).when(eventRepository).deleteEvent(any(EventModel.class));
 	    // Simulate concurrent deletion by creating multiple threads
 	    List<Thread> threads = IntStream.range(0, 10)
-	            .mapToObj(i -> new Thread(() -> eventController.deleteEvent(event))).peek(t -> t.start())
+	            .mapToObj(i -> new Thread(() -> eventController.deleteEvent(event))).peek(Thread::start)
 	            .collect(Collectors.toList());
 	    // Wait for all threads to finish execution
-	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 	    // Ensure that the event is deleted and the delete action was properly recorded
 	    assertThat(eventList).isEmpty();
 	    assertThat(deletedEventList).containsExactly(event);
@@ -163,10 +163,10 @@ public class EventControllerRaceConditionTest {
 	    }).when(eventRepository).updateEvent(any(EventModel.class));
 	    // Simulate concurrent updates by creating multiple threads
 	    List<Thread> threads = IntStream.range(0, 10)
-	            .mapToObj(i -> new Thread(() -> eventController.updateEvent(event))).peek(t -> t.start())
+	            .mapToObj(i -> new Thread(() -> eventController.updateEvent(event))).peek(Thread::start)
 	            .collect(Collectors.toList());
 	    // Wait for all threads to finish execution
-	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 	    // Ensure that the event is updated correctly
 	    assertThat(eventList).isEmpty();
 	    assertThat(updatedEventList).containsExactly(event);

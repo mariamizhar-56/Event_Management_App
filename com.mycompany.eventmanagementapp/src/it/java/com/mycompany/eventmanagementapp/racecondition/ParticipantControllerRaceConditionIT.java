@@ -126,8 +126,8 @@ public class ParticipantControllerRaceConditionIT {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		})).peek(t -> t.start()).collect(Collectors.toList());
-		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+		})).peek(Thread::start).collect(Collectors.toList());
+		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 
 		// Verify
 		ParticipantModel savedParticipant = participantRepository.getAllParticipants().get(0);
@@ -154,8 +154,8 @@ public class ParticipantControllerRaceConditionIT {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		})).peek(t -> t.start()).collect(Collectors.toList());
-		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+		})).peek(Thread::start).collect(Collectors.toList());
+		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 
 		// Verify
 		assertThat(participantRepository.getAllParticipants()).containsExactly(savedParticipant);
@@ -181,8 +181,8 @@ public class ParticipantControllerRaceConditionIT {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		})).peek(t -> t.start()).collect(Collectors.toList());
-		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+		})).peek(Thread::start).collect(Collectors.toList());
+		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 
 		// Verify
 		assertThat(participantRepository.getAllParticipants()).isEmpty();

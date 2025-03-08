@@ -148,10 +148,10 @@ public class ParticipantControllerRaceConditionTest {
 		// Start multiple threads to simulate concurrent access
 		List<Thread> threads = IntStream.range(0, 10)
 				.mapToObj(i -> new Thread(() -> participantController.addParticipant(newParticipant, event)))
-				.peek(t -> t.start()).collect(Collectors.toList());
+				.peek(Thread::start).collect(Collectors.toList());
 
 		// Wait for all threads to finish execution
-		await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+		await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 
 		// Verify that only one participant was added to the list (no duplicates)
 		assertThat(participants).containsExactly(newParticipant);
@@ -197,10 +197,10 @@ public class ParticipantControllerRaceConditionTest {
 		// Start multiple threads to simulate concurrent access
 		List<Thread> threads = IntStream.range(0, 10)
 				.mapToObj(i -> new Thread(() -> participantController.addParticipant(existingParticipant, event)))
-				.peek(t -> t.start()).collect(Collectors.toList());
+				.peek(Thread::start).collect(Collectors.toList());
 
 		// Wait for all threads to finish execution
-		await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+		await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 
 		// Verify that the participant's event associations were updated and not
 		// duplicated
@@ -248,10 +248,10 @@ public class ParticipantControllerRaceConditionTest {
 	    // Start 10 threads to simulate concurrent access
 	    List<Thread> threads = IntStream.range(0, 10)
 				.mapToObj(i -> new Thread(() -> participantController.deleteParticipant(participant, event)))
-				.peek(t -> t.start()).collect(Collectors.toList());
+				.peek(Thread::start).collect(Collectors.toList());
 
 	    // Wait for all threads to finish
-	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 
 	    // Verify that the participant was deleted as they were associated with only one event
 	    assertThat(participants).isEmpty();
@@ -297,11 +297,11 @@ public class ParticipantControllerRaceConditionTest {
 	    // Start 10 threads to simulate concurrent access
 	    List<Thread> threads = IntStream.range(0, 10)
 	            .mapToObj(i -> new Thread(() -> participantController.deleteParticipant(participant, event1)))
-	            .peek(t -> t.start())
+	            .peek(Thread::start)
 	            .collect(Collectors.toList());
 
 	    // Wait for all threads to finish
-	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 
 	    // Verify that the participant is still in the list because they are linked to another event
 	    assertThat(participants).containsExactly(participant);
@@ -332,10 +332,10 @@ public class ParticipantControllerRaceConditionTest {
 	    }).when(participantRepository).updateParticipant(any(ParticipantModel.class));
 	    // Simulate concurrent updates by creating multiple threads
 	    List<Thread> threads = IntStream.range(0, 10)
-	            .mapToObj(i -> new Thread(() -> participantController.updateParticipant(participant))).peek(t -> t.start())
+	            .mapToObj(i -> new Thread(() -> participantController.updateParticipant(participant))).peek(Thread::start)
 	            .collect(Collectors.toList());
 	    // Wait for all threads to finish execution
-	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+	    await().atMost(10, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 	    // Ensure that the participant is updated correctly
 	    assertThat(participants).isEmpty();
 	    assertThat(UpdatedParticipants).containsExactly(participant);

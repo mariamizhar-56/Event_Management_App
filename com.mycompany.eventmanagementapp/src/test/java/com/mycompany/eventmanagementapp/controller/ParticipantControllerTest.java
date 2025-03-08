@@ -455,10 +455,10 @@ public class ParticipantControllerTest {
 	public void testDeleteParticipantWhenItHasSelectedEventAssociatedAndHasMoreAssociatedEventsLeft() {
 		//Setup & Exercise
 		EventModel selectedEvent = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
-		EventModel AdditionalEvent = new EventModel(EVENT_ID_2, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
+		EventModel additionalEvent = new EventModel(EVENT_ID_2, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
 		participant.addEvent(selectedEvent);
-		participant.addEvent(AdditionalEvent);
+		participant.addEvent(additionalEvent);
 		when(participantRepository.getParticipantByEmail(PARTICIPANT_EMAIL)).thenReturn(participant);
 		when(eventRepository.getEventById(selectedEvent.getEventId())).thenReturn(selectedEvent);
 		participantController.deleteParticipant(participant, selectedEvent);

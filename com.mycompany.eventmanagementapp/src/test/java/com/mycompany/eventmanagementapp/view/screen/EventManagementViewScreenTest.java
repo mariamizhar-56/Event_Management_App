@@ -154,9 +154,9 @@ public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 		window.textBox(TXT_EVENT_ERROR).requireVisible().requireNotEditable().requireText(" ");
 	}
 
-	// Test Add Button is enabled when eventName is not empty
+	// Test Add Button is enabled when eventName, location and date is not empty
 	@Test
-	public void testWhenEventNameIsNonEmptyThenAddButtonShouldBeEnabled() {
+	public void testWhenEventNameLocationAndDateIsNonEmptyThenAddButtonShouldBeEnabled() {
 		// Setup & Exercise
 		setFieldValues(EVENT_NAME_1, EVENT_LOCATION_1, EVENT_DATE_1.toString());
 
@@ -174,16 +174,6 @@ public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 		window.button(JButtonMatcher.withText(BTN_ADD_EVENT)).requireDisabled();
 	}
 
-	// Test Add Button is enabled when eventLocation is not empty
-	@Test
-	public void testWhenEventLocationIsNonEmptyThenAddButtonShouldBeEnabled() {
-		// Setup & Exercise
-		setFieldValues(EVENT_NAME_1, EVENT_LOCATION_1, EVENT_DATE_1.toString());
-
-		// Verify
-		window.button(JButtonMatcher.withText(BTN_ADD_EVENT)).requireEnabled();
-	}
-
 	// Test Add Button is disabled when eventLocation is empty
 	@Test
 	public void testWhenEventLocationIsEmptyThenAddButtonShouldBeDisabled() {
@@ -192,16 +182,6 @@ public class EventManagementViewScreenTest extends AssertJSwingJUnitTestCase {
 
 		// Verify
 		window.button(JButtonMatcher.withText(BTN_ADD_EVENT)).requireDisabled();
-	}
-
-	// Test Add Button is enabled when eventDate is not empty
-	@Test
-	public void testWhenEventDateIsNonEmptyThenAddButtonShouldBeEnabled() {
-		// Setup & Exercise
-		setFieldValues(EVENT_NAME_1, EVENT_LOCATION_1, EVENT_DATE_1.toString());
-
-		// Verify
-		window.button(JButtonMatcher.withText(BTN_ADD_EVENT)).requireEnabled();
 	}
 
 	// Test Add Button is disabled when eventDate is empty

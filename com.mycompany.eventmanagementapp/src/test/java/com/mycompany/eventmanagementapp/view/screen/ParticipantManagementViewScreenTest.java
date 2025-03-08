@@ -176,9 +176,9 @@ public class ParticipantManagementViewScreenTest extends AssertJSwingJUnitTestCa
 		window.textBox(TXT_PARTICIPANT_ERROR).requireVisible().requireNotEditable().requireText(" ");
 	}
 
-	// Test Add Button is enabled when eventId is not empty
+	// Test Add Button is enabled when eventId, ParticipantName and ParticipantEmail is not empty
 	@Test
-	public void testWhenEventIdIsNonEmptyThenAddButtonShouldBeEnabled() {
+	public void testWhenEventIdParticipantNameAndEmailIsNonEmptyThenAddButtonShouldBeEnabled() {
 		//Setup & Exercise
 		setFieldValues(String.valueOf(EVENT_ID), PARTICIPANT_NAME, PARTICIPANT_EMAIL);
 		
@@ -207,16 +207,6 @@ public class ParticipantManagementViewScreenTest extends AssertJSwingJUnitTestCa
 		window.button(JButtonMatcher.withText(BTN_ADD_PARTICIPANT)).requireDisabled();
 	}
 
-	// Test Add Button is enabled when participantName is not empty
-	@Test
-	public void testWhenParticipantNameIsNonEmptyThenAddButtonShouldBeEnabled() {
-		//Setup & Exercise
-		setFieldValues(String.valueOf(EVENT_ID), PARTICIPANT_NAME, PARTICIPANT_EMAIL);
-		
-		//Verify
-		window.button(JButtonMatcher.withText(BTN_ADD_PARTICIPANT)).requireEnabled();
-	}
-
 	// Test Add Button is disabled when participantName is empty
 	@Test
 	public void testWhenParticipantNameIsEmptyThenAddButtonShouldBeDisabled() {
@@ -225,16 +215,6 @@ public class ParticipantManagementViewScreenTest extends AssertJSwingJUnitTestCa
 		
 		//Verify
 		window.button(JButtonMatcher.withText(BTN_ADD_PARTICIPANT)).requireDisabled();
-	}
-
-	// Test Add Button is enabled when participantEmail is not empty
-	@Test
-	public void testWhenParticipantEmailIsNonEmptyThenAddButtonShouldBeEnabled() {
-		//Setup & Exercise
-		setFieldValues(String.valueOf(EVENT_ID), PARTICIPANT_NAME, PARTICIPANT_EMAIL);
-		
-		//Verify
-		window.button(JButtonMatcher.withText(BTN_ADD_PARTICIPANT)).requireEnabled();
 	}
 
 	// Test Add Button is disabled when participantEmail is empty

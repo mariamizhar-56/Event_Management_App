@@ -117,8 +117,8 @@ public class EventControllerRaceConditionIT {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		})).peek(t -> t.start()).collect(Collectors.toList());
-		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+		})).peek(Thread::start).collect(Collectors.toList());
+		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 		
 		//Verify
 		EventModel savedEvent = eventRepository.getAllEvents().get(0);
@@ -141,8 +141,8 @@ public class EventControllerRaceConditionIT {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		})).peek(t -> t.start()).collect(Collectors.toList());
-		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+		})).peek(Thread::start).collect(Collectors.toList());
+		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 		
 		//Verify
 		assertThat(eventRepository.getAllEvents()).containsExactly(savedEvent);
@@ -163,8 +163,8 @@ public class EventControllerRaceConditionIT {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		})).peek(t -> t.start()).collect(Collectors.toList());
-		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(t -> t.isAlive()));
+		})).peek(Thread::start).collect(Collectors.toList());
+		await().atMost(20, TimeUnit.SECONDS).until(() -> threads.stream().noneMatch(Thread::isAlive));
 		
 		//Verify
 		assertThat(eventRepository.getAllEvents()).isEmpty();

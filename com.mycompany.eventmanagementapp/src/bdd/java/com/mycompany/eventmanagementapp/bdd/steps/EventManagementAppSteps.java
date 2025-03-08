@@ -316,23 +316,17 @@ public class EventManagementAppSteps {
 	public void the_user_enters_the_following_values_in_the_text_fields(List<Map<String, String>> values) {
 		values.stream().flatMap(m -> m.entrySet().stream()).forEach(e -> {
 			if (e.getKey().contains(TXT_EVENT_NAME)) {
-				eventManagementAppWindow.textBox(e.getKey()).setText("");
-				eventManagementAppWindow.textBox(e.getKey()).enterText(e.getValue());
+				updateTextBox(e.getKey(), e.getValue());
 			} else if (e.getKey().contains(TXT_EVENT_LOCATION)) {
-				eventManagementAppWindow.textBox(e.getKey()).setText("");
-				eventManagementAppWindow.textBox(e.getKey()).enterText(e.getValue());
+				updateTextBox(e.getKey(), e.getValue());
 			} else if ((e.getKey().contains(TXT_EVENT_DATE))) {
-				eventManagementAppWindow.textBox(e.getKey()).setText("");
-				eventManagementAppWindow.textBox(e.getKey()).enterText(e.getValue());
+				updateTextBox(e.getKey(), e.getValue());
 			} else if ((e.getKey().contains(TXT_PARTICIPANT_NAME))) {
-				eventManagementAppWindow.textBox(e.getKey()).setText("");
-				eventManagementAppWindow.textBox(e.getKey()).enterText(e.getValue());
+				updateTextBox(e.getKey(), e.getValue());
 			} else if ((e.getKey().contains(TXT_PARTICIPANT_EMAIL))) {
-				eventManagementAppWindow.textBox(e.getKey()).setText("");
-				eventManagementAppWindow.textBox(e.getKey()).enterText(e.getValue());
+				updateTextBox(e.getKey(), e.getValue());
 			} else if ((e.getKey().contains(TXT_EVENT_ID))) {
-				eventManagementAppWindow.textBox(e.getKey()).setText("");
-				eventManagementAppWindow.textBox(e.getKey()).enterText(e.getValue());
+				updateTextBox(e.getKey(), e.getValue());
 			}
 		});
 	}
@@ -360,5 +354,11 @@ public class EventManagementAppSteps {
 	@When("The user clicks the {string} button")
 	public void the_user_clicks_the_button(String buttonText) {
 		eventManagementAppWindow.button(JButtonMatcher.withText(buttonText)).click();
+	}
+
+	// Helper Method
+	public void updateTextBox(String key, String value) {
+		eventManagementAppWindow.textBox(key).setText("");
+		eventManagementAppWindow.textBox(key).enterText(value);
 	}
 }

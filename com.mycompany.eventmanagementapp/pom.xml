@@ -57,7 +57,8 @@
 
 		<!-- For each rule to be ignored, add another eXX and two corresponding
 		properties with eXX in the name as below -->
-		<sonar.issue.ignore.multicriteria>e11,e12,e13,e14,e15,e16,e17</sonar.issue.ignore.multicriteria>
+		<sonar.issue.ignore.multicriteria>
+			e11,e12,e13,e14,e15,e16,e17,e18,e19,e20</sonar.issue.ignore.multicriteria>
 
 		<!-- Disable rule for "Inheritance tree of classes should not be too
 		deep" -->
@@ -104,7 +105,7 @@
 		<sonar.issue.ignore.multicriteria.e15.resourceKey>
 			**/EventManagementViewScreen.java
 		</sonar.issue.ignore.multicriteria.e15.resourceKey>
-		
+
 		<!-- Disable rule for "Make sure that using a regular expression is safe
 		here" This warning is of type review, I have reviewed it and now
 		ignoring this rule for Valid Email Pattern. -->
@@ -114,8 +115,9 @@
 		<sonar.issue.ignore.multicriteria.e16.resourceKey>
 			**/ValidationConfigurations.java
 		</sonar.issue.ignore.multicriteria.e16.resourceKey>
-		
-		<!-- Disable rule for "Make sure that command line arguments are used safely
+
+		<!-- Disable rule for "Make sure that command line arguments are used
+		safely
 		here." This warning is of type review, I have reviewed it and now
 		ignoring this rule for Application Main method arguments. -->
 		<sonar.issue.ignore.multicriteria.e17.ruleKey>
@@ -124,6 +126,39 @@
 		<sonar.issue.ignore.multicriteria.e17.resourceKey>
 			**/EventManagementApp.java
 		</sonar.issue.ignore.multicriteria.e17.resourceKey>
+
+		<!-- Disable rule for "This class is part of one cycle containing 2
+		classes within package." In my project there is many to many relationship and
+		each model contain list of another model and it is also incorporating
+		with setters getters and utility methods in Model class such as add and
+		remove which is important for data consistency. In our View Screens we are also
+		using Event View in Participant Screen and vice versa so User can open
+		one screen from another using buttons, because of this SonarQube is
+		giving this warning which is not critical in my project. -->
+		<sonar.issue.ignore.multicriteria.e18.ruleKey>
+			javaarchitecture:S7027
+		</sonar.issue.ignore.multicriteria.e18.ruleKey>
+		<sonar.issue.ignore.multicriteria.e18.resourceKey>
+			**/model/*.*
+		</sonar.issue.ignore.multicriteria.e18.resourceKey>
+		<sonar.issue.ignore.multicriteria.e19.ruleKey>
+			javaarchitecture:S7027
+		</sonar.issue.ignore.multicriteria.e19.ruleKey>
+		<sonar.issue.ignore.multicriteria.e19.resourceKey>
+			**/*ViewScreen.java
+		</sonar.issue.ignore.multicriteria.e19.resourceKey>
+
+		<!-- Disable rule for "Replace these 3 tests with a single Parameterized
+		one." With respect to course book it was important to keep each test case
+		separate with unique method description to maintain there uniqueness and
+		readability. Based on that I think it is appropriate to ignore this rule
+		for Unit ViewTest classes.' -->
+		<sonar.issue.ignore.multicriteria.e20.ruleKey>
+			java:S5976
+		</sonar.issue.ignore.multicriteria.e20.ruleKey>
+		<sonar.issue.ignore.multicriteria.e20.resourceKey>
+			**/*ViewScreenTest.java
+		</sonar.issue.ignore.multicriteria.e20.resourceKey>
 
 		<sonar.coverage.exclusions>
 			**/model/*.*,
@@ -302,7 +337,7 @@
 							<excludes>
 								<exclude>**/EventManagementApp.*</exclude>
 								<exclude>**/model/*.*</exclude>
-								
+
 							</excludes>
 						</configuration>
 						<executions>
@@ -384,10 +419,16 @@
 						</executions>
 						<configuration>
 							<targetClasses>
-								<param>com.mycompany.eventmanagementapp.*.*</param>
+								<param>
+									com.mycompany.eventmanagementapp.controller.**</param>
+								<param>
+									com.mycompany.eventmanagementapp.controller.utils.**</param>
 							</targetClasses>
 							<targetTests>
-								<param>com.mycompany.eventmanagementapp.*.*</param>
+								<param>
+									com.mycompany.eventmanagementapp.controller.**</param>
+								<param>
+									com.mycompany.eventmanagementapp.controller.utils.**</param>
 							</targetTests>
 							<excludedClasses>
 								<param>
@@ -397,13 +438,15 @@
 								<param>
 									com.mycompany.eventmanagementapp.model.**</param>
 								<param>
-									com.mycompany.eventmanagementapp.**</param>
+									com.mycompany.eventmanagementapp.EventManagementApp.**</param>
 							</excludedClasses>
 							<excludedTestClasses>
 								<param>
 									com.mycompany.eventmanagementapp.controller.**IT</param>
 								<param>
 									com.mycompany.eventmanagementapp.bdd.**</param>
+								<param>
+									com.mycompany.eventmanagementapp.mvc.**</param>
 								<param>
 									com.mycompany.eventmanagementapp.**E2E</param>
 								<param>

@@ -75,7 +75,7 @@ public class DBSteps {
 
 	private EventModel firstEvent;
 	
-	private ParticipantModel SecondParticipant;
+	private ParticipantModel secondParticipant;
 	
 	// Test Containers MySQL container
 	@SuppressWarnings("resource")
@@ -209,9 +209,10 @@ public class DBSteps {
 		addTestEventToDatabase(event2);
 		ParticipantModel participant = new ParticipantModel(PARTICIPANT_NAME, PARTICIPANT_EMAIL);
 		addTestParticipantToDatabase(participant, event1);
-		addTestParticipantToDatabase(participant, event2);
-	    SecondParticipant = new ParticipantModel(PARTICIPANT_NAME_2, PARTICIPANT_EMAIL_2);
-		addTestParticipantToDatabase(SecondParticipant, event1);
+		ParticipantModel addedParticipant = getParticipantFromDatabase(participant.getParticipantId());
+		addTestParticipantToDatabase(addedParticipant, event2);
+	    secondParticipant = new ParticipantModel(PARTICIPANT_NAME_2, PARTICIPANT_EMAIL_2);
+		addTestParticipantToDatabase(secondParticipant, event1);
 	}
 
 	@Given("The participant is in the meantime removed from that event")
@@ -219,11 +220,11 @@ public class DBSteps {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
-		EventModel associatedEvent = SecondParticipant.getEvents().iterator().next();
+		EventModel associatedEvent = secondParticipant.getEvents().iterator().next();
 		EventModel existingEvent = session.get(EventModel.class, associatedEvent.getEventId());
-		SecondParticipant.removeEvent(existingEvent);
-		SecondParticipant = (ParticipantModel) session.merge(SecondParticipant);
-		session.delete(SecondParticipant);
+		secondParticipant.removeEvent(existingEvent);
+		secondParticipant = (ParticipantModel) session.merge(secondParticipant);
+		session.delete(secondParticipant);
 		
 		session.getTransaction().commit();
 		session.close();
@@ -261,4 +262,12 @@ public class DBSteps {
 		session.getTransaction().commit();
 		session.close();
 	}
+	
+	public ParticipantModel getParticipantFromDatabase(long participantId) {
+        Session session = sessionFactory.openSession();
+        ParticipantModel participant = session.get(ParticipantModel.class, participantId);
+        session.close();
+        
+        return participant;
+    }
 }

@@ -238,7 +238,6 @@ public class EventManagementViewScreenIT extends AssertJSwingJUnitTestCase {
 		EventModel event = new EventModel(EVENT_DEFAULT_ID, EVENT_NAME_1, EVENT_DATE_1, EVENT_LOCATION_1);
 		GuiActionRunner.execute(() -> {
 			eventController.addEvent(event);
-			// eventController.getAllEvents();
 		});
 
 		// Exercise
