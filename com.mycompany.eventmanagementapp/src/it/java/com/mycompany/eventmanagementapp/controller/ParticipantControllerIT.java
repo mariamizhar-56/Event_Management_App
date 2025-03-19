@@ -22,30 +22,29 @@ import org.junit.Test;
 import org.junit.After;
 import org.mockito.Mock;
 import org.junit.Before;
-import org.junit.ClassRule;
 import java.time.LocalDate;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.hibernate.SessionFactory;
 import org.mockito.MockitoAnnotations;
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.verify;
 import org.hibernate.boot.MetadataSources;
-import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.containers.MySQLContainer;
 import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import com.mycompany.eventmanagementapp.model.EventModel;
 import com.mycompany.eventmanagementapp.model.ParticipantModel;
 import com.mycompany.eventmanagementapp.repository.EventRepository;
+import com.mycompany.eventmanagementapp.dbconfigurations.DBConfigSetup;
 import com.mycompany.eventmanagementapp.view.ParticipantManagementView;
 import com.mycompany.eventmanagementapp.repository.ParticipantRepository;
 import com.mycompany.eventmanagementapp.repository.mysql.EventMySqlRepository;
+import com.mycompany.eventmanagementapp.dbconfigurations.DatabaseConfiguration;
 import com.mycompany.eventmanagementapp.repository.mysql.ParticipantMySqlRepository;
 
 public class ParticipantControllerIT {
 
+	private static DatabaseConfiguration databaseConfig;
+	
 	private EventRepository eventRepository;
 
 	private ParticipantRepository participantRepository;
@@ -83,49 +82,18 @@ public class ParticipantControllerIT {
 
 	private static final String PARTICIPANT_EMAIL = "John@gmail.com";
 
-	// Using MySQLContainer from Test Containers for Integration Testing
-	@SuppressWarnings("resource")
-	@ClassRule
-	public static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>(DockerImageName.parse("mysql:8.0.28"))
-			.withDatabaseName("test").withUsername("test").withPassword("test");
-
-	// Setup Database using Test Containers OR local MySQL Instance
+	// Setup Database Config for Eclipse OR Maven
 	@BeforeClass
 	public static void configureDB() {
-		// Check if running in Eclipse
-		if (System.getProperty("surefire.test.class.path") == null) {
-			// Using Test Containers (Eclipse environment)
-			mysqlContainer.start();
-			// Configure Hibernate to use Test Containers MySQL
-			registry = new StandardServiceRegistryBuilder().configure("hibernate-IT.cfg.xml")
-					.applySetting("hibernate.connection.url", mysqlContainer.getJdbcUrl())
-					.applySetting("hibernate.connection.username", mysqlContainer.getUsername())
-					.applySetting("hibernate.connection.password", mysqlContainer.getPassword()).build();
-		} else {
-			// Using Maven Docker (Maven environment)
-			registry = new StandardServiceRegistryBuilder().configure("hibernate-IT.cfg.xml")
-					.applySetting("hibernate.connection.url", "jdbc:mysql://localhost:3307/event_management_app")
-					.applySetting("hibernate.connection.password", "test").build();
-		}
-	}
-
-	// Tear down the Database and stop the container if necessary
-	@AfterClass
-	public static void shutdownDB() {
-		StandardServiceRegistryBuilder.destroy(registry);
-		if (sessionFactory != null) {
-			sessionFactory.close();
-		}
-		if (System.getProperty("surefire.test.class.path") == null) {
-			// Test Containers (Eclipse environment)
-			mysqlContainer.stop();
-		}
+		databaseConfig = DBConfigSetup.getDatabaseConfig();
+		databaseConfig.StartDatabaseConnection();
 	}
 
 	// Initialize mocks and set up Hibernate session factory and repository
 	@Before
 	public void setup() {
 		closeable = MockitoAnnotations.openMocks(this);
+		registry = databaseConfig.getServiceRegistry();
 		MetadataSources metadataSources = new MetadataSources(registry);
 		sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
 		eventRepository = new EventMySqlRepository(sessionFactory);
@@ -136,6 +104,9 @@ public class ParticipantControllerIT {
 	// Close mocks after each test
 	@After
 	public void releaseMocks() throws Exception {
+		if (sessionFactory != null) {
+			sessionFactory.close();
+		}
 		closeable.close();
 	}
 

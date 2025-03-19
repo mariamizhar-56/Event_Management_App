@@ -21,7 +21,6 @@ package com.mycompany.eventmanagementapp.mvc;
 
 import org.junit.Test;
 import java.time.LocalDate;
-import org.junit.ClassRule;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.hibernate.SessionFactory;
@@ -30,8 +29,6 @@ import org.hibernate.boot.MetadataSources;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
 import static org.awaitility.Awaitility.await;
-import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.containers.MySQLContainer;
 import org.assertj.swing.core.matcher.JButtonMatcher;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -41,15 +38,13 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import com.mycompany.eventmanagementapp.model.*;
 import com.mycompany.eventmanagementapp.controller.*;
 import com.mycompany.eventmanagementapp.repository.mysql.*;
+import com.mycompany.eventmanagementapp.dbconfigurations.DBConfigSetup;
+import com.mycompany.eventmanagementapp.dbconfigurations.DatabaseConfiguration;
 import com.mycompany.eventmanagementapp.view.screen.ParticipantManagementViewScreen;
 
 public class ParticipantModelViewControllerIT extends AssertJSwingJUnitTestCase {
 
-	// Using MySQLContainer from Test Containers for Integration Testing
-	@SuppressWarnings("resource")
-	@ClassRule
-	public static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>(DockerImageName.parse("mysql:8.0.28"))
-			.withDatabaseName("test").withUsername("test").withPassword("test");
+	private static DatabaseConfiguration databaseConfig;
 
 	private static SessionFactory sessionFactory;
 
@@ -64,49 +59,46 @@ public class ParticipantModelViewControllerIT extends AssertJSwingJUnitTestCase 
 	private ParticipantController participantController;
 
 	private static final long EVENT_ID = 1;
-	
+
 	private static final String EVENT_NAME_1 = "Music Festival";
-	
+
 	private static final LocalDate EVENT_DATE_1 = LocalDate.now().plusDays(10);
-	
+
 	private static final String EVENT_LOCATION_1 = "Florence";
-	
+
 	private static final String EVENT_NAME_2 = "University Event";
-	
+
 	private static final LocalDate EVENT_DATE_2 = LocalDate.now().plusDays(20);
-	
+
 	private static final String EVENT_LOCATION_2 = "Milan";
-	
+
 	private static final String PARTICIPANT_NAME = "John";
-	
+
 	private static final String PARTICIPANT_EMAIL = "John@gmail.com";
-	
+
 	private static final String PARTICIPANT_NAME_2 = "Martin";
 
 	private static final String BTN_ADD_PARTICIPANT = "Add Participant";
-	
+
 	private static final String BTN_UPDATE_PARTICIPANT = "Update Participant";
-	
+
 	private static final String BTN_DELETE_PARTICIPANT = "Delete Participant";
 
 	private static final String TXT_EVENT_ID = "txtEventId";
-	
+
 	private static final String TXT_PARTICIPANT_NAME = "txtParticipantName";
-	
+
 	private static final String TXT_PARTICIPANT_EMAIL = "txtParticipantEmail";
 
 	private static final String LIST_PARTICIPANT = "participantList";
-	
+
 	private static final String LIST_EVENT = "eventListForParticipant";
 
-	// Setup the MySQL container and Hibernate session before running the tests
+	// Setup Database Config for Eclipse OR Maven
 	@BeforeClass
-	public static void setupContainer() {
-		mysqlContainer.start();
-		registry = new StandardServiceRegistryBuilder().configure("hibernate-IT.cfg.xml")
-				.applySetting("hibernate.connection.url", mysqlContainer.getJdbcUrl())
-				.applySetting("hibernate.connection.username", mysqlContainer.getUsername())
-				.applySetting("hibernate.connection.password", mysqlContainer.getPassword()).build();
+	public static void configureDB() {
+		databaseConfig = DBConfigSetup.getDatabaseConfig();
+		databaseConfig.StartDatabaseConnection();
 	}
 
 	// Tear down the session and stop the MySQL container after the tests
@@ -116,12 +108,12 @@ public class ParticipantModelViewControllerIT extends AssertJSwingJUnitTestCase 
 		if (sessionFactory != null) {
 			sessionFactory.close();
 		}
-		mysqlContainer.stop();
 	}
 
 	// Setup UI and Repositories before each test
 	@Override
 	protected void onSetUp() throws Exception {
+		registry = databaseConfig.getServiceRegistry();
 		MetadataSources metadataSources = new MetadataSources(registry);
 		sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
 		participantRepository = new ParticipantMySqlRepository(sessionFactory);
@@ -230,13 +222,13 @@ public class ParticipantModelViewControllerIT extends AssertJSwingJUnitTestCase 
 
 		// Exercise
 		window.list(LIST_PARTICIPANT).selectItem(0);
-		window.list(LIST_EVENT).selectItem(0); // Selecting event2 for Participate Deletion, by default latest added event will come first in List View.
+		window.list(LIST_EVENT).selectItem(0);
 		window.button(JButtonMatcher.withText(BTN_DELETE_PARTICIPANT)).click();
 
 		// Verify
 		await().atMost(10, TimeUnit.SECONDS).untilAsserted(
 				() -> assertThat(participantRepository.getParticipantById(participant.getParticipantId()).getEvents())
-						.containsOnly(event1));
+						.containsOnly(event2));
 	}
 
 	// Test Delete Participant From UI

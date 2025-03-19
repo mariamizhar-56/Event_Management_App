@@ -472,6 +472,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>${maven-surefire-plugin-version}</version>
 						<configuration>
 							<skipTests>true</skipTests>
 						</configuration>
@@ -550,9 +551,7 @@
 									<name>mysql:${mysql-version}</name>
 									<run>
 										<ports>
-											<port>3307:3306</port> <!-- Corrected
-											port
-									for MySQL -->
+											<port>3307:3306</port>
 										</ports>
 										<env>
 											<MYSQL_ROOT_PASSWORD>

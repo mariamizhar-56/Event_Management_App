@@ -22,15 +22,17 @@ import io.cucumber.java.AfterAll;
 import io.cucumber.java.BeforeAll;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
-import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.containers.MySQLContainer;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import com.mycompany.eventmanagementapp.model.EventModel;
 import com.mycompany.eventmanagementapp.model.ParticipantModel;
+import com.mycompany.eventmanagementapp.dbconfigurations.DBConfigSetup;
+import com.mycompany.eventmanagementapp.dbconfigurations.DatabaseConfiguration;
 
 public class DBSteps {
+	
+	private static DatabaseConfiguration databaseConfig;
 
 	static final long DEFAULT_EVENT_ID = -1;
 	
@@ -76,32 +78,14 @@ public class DBSteps {
 	private EventModel firstEvent;
 	
 	private ParticipantModel secondParticipant;
-	
-	// Test Containers MySQL container
-	@SuppressWarnings("resource")
-	public static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>(DockerImageName.parse("mysql:8.0.28"))
-			.withDatabaseName("test").withUsername("test").withPassword("test");
 
 	@BeforeAll
 	public static void configureDB() {
-		if (isRunningInEclipse()) {
-			mysqlContainer.start();
-			dbURL = mysqlContainer.getJdbcUrl();
-			System.setProperty("ENVIRONMENT", "testWithEclipes");
-			registry = new StandardServiceRegistryBuilder().configure("hibernate-IT.cfg.xml")
-					.applySetting("hibernate.connection.url", dbURL)
-					.applySetting("hibernate.connection.username", DB_USER)
-					.applySetting("hibernate.connection.password", DB_PASS).build();
-		} else {
-			// For Maven or any other environment, use the default configuration
-			registry = new StandardServiceRegistryBuilder().configure("hibernate-IT.cfg.xml")
-					.applySetting("hibernate.connection.url", "jdbc:mysql://localhost:3307/event_management_app")
-					.applySetting("hibernate.connection.password", "test").build();
+		databaseConfig = DBConfigSetup.getDatabaseConfig();
+		databaseConfig.StartDatabaseConnection();
+		if (databaseConfig.GetMySQLContainer() != null) {
+			dbURL = databaseConfig.GetMySQLContainer().getJdbcUrl();
 		}
-	}
-
-	private static boolean isRunningInEclipse() {
-		return System.getProperty("surefire.test.class.path") == null;
 	}
 
 	@AfterAll
@@ -111,14 +95,11 @@ public class DBSteps {
 		if (sessionFactory != null) {
 			sessionFactory.close();
 		}
-		if (System.getProperty("surefire.test.class.path") == null) {
-			// Using Test containers (Eclipse environment)
-			mysqlContainer.stop();
-		}
 	}
 
 	@Before
 	public void setup() {
+		registry = databaseConfig.getServiceRegistry();
 		MetadataSources metadataSources = new MetadataSources(registry);
 		sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
 	}

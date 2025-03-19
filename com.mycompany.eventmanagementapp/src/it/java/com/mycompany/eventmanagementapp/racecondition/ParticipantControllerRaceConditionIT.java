@@ -22,7 +22,6 @@ import org.junit.Test;
 import java.util.List;
 import org.junit.Before;
 import org.mockito.Mock;
-import org.junit.ClassRule;
 import java.time.LocalDate;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -32,8 +31,6 @@ import org.hibernate.SessionFactory;
 import java.util.concurrent.TimeUnit;
 import org.hibernate.boot.MetadataSources;
 import static org.awaitility.Awaitility.await;
-import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.containers.MySQLContainer;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -43,14 +40,12 @@ import com.mycompany.eventmanagementapp.controller.*;
 import com.mycompany.eventmanagementapp.repository.*;
 import com.mycompany.eventmanagementapp.view.screen.*;
 import com.mycompany.eventmanagementapp.repository.mysql.*;
+import com.mycompany.eventmanagementapp.dbconfigurations.DBConfigSetup;
+import com.mycompany.eventmanagementapp.dbconfigurations.DatabaseConfiguration;
 
 public class ParticipantControllerRaceConditionIT {
 
-	// Using MySQLContainer from Test Containers for Integration Testing
-	@SuppressWarnings("resource")
-	@ClassRule
-	public static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>(DockerImageName.parse("mysql:8.0.28"))
-			.withDatabaseName("test").withUsername("test").withPassword("test");
+	private static DatabaseConfiguration databaseConfig;
 
 	private static SessionFactory sessionFactory;
 
@@ -66,43 +61,40 @@ public class ParticipantControllerRaceConditionIT {
 	private ParticipantRepository participantRepository;
 
 	private static final long DEFAULT_EVENT_ID = -1;
-	
+
 	private static final String EVENT_NAME = "Music Festival";
-	
+
 	private static final LocalDate EVENT_DATE = LocalDate.now().plusDays(10);
-	
+
 	private static final String EVENT_LOCATION = "Florence";
-	
+
 	private static final String PARTICIPANT_NAME = "John";
-	
+
 	private static final String PARTICIPANT_NAME_2 = "Martin";
-	
+
 	private static final String PARTICIPANT_EMAIL = "John@gmail.com";
 
-	// Set up the MySQL container and Hibernate configuration
+	// Setup Database Config for Eclipse OR Maven
 	@BeforeClass
-	public static void setupContainer() {
-		mysqlContainer.start();
-		registry = new StandardServiceRegistryBuilder().configure("hibernate-IT.cfg.xml")
-				.applySetting("hibernate.connection.url", mysqlContainer.getJdbcUrl())
-				.applySetting("hibernate.connection.username", mysqlContainer.getUsername())
-				.applySetting("hibernate.connection.password", mysqlContainer.getPassword()).build();
+	public static void configureDB() {
+		databaseConfig = DBConfigSetup.getDatabaseConfig();
+		databaseConfig.StartDatabaseConnection();
 	}
 
-	// Tear down the database and stop the container after tests
+	// Tear down the database after tests
 	@AfterClass
 	public static void shutdownServer() {
 		StandardServiceRegistryBuilder.destroy(registry);
 		if (sessionFactory != null) {
 			sessionFactory.close();
 		}
-		mysqlContainer.stop();
 	}
 
 	// Initialize Hibernate session factory and repository and controller before
 	// each test
 	@Before
 	public void setup() {
+		registry = databaseConfig.getServiceRegistry();
 		MetadataSources metadataSources = new MetadataSources(registry);
 		sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
 		eventRepository = new EventMySqlRepository(sessionFactory);
