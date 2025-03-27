@@ -15,7 +15,10 @@ public class MavenContainerConfig implements DatabaseConfiguration {
 	private static final String DB_PASSWORD = "test";
 	
 	@Override
-	public void StartDatabaseConnection() {}
+	public void StartDatabaseConnection() {
+		//No need to start a container in case of Maven, it will run from POM.xml configuration
+		return;
+	}
 
 	@Override
 	public StandardServiceRegistry getServiceRegistry() {
