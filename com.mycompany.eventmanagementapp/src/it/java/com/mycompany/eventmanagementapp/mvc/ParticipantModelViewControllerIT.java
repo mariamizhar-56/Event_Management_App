@@ -23,6 +23,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import java.util.regex.Pattern;
 import org.hibernate.SessionFactory;
 import java.util.concurrent.TimeUnit;
 import org.hibernate.boot.MetadataSources;
@@ -211,9 +212,10 @@ public class ParticipantModelViewControllerIT extends AssertJSwingJUnitTestCase 
 		eventRepository.addEvent(event1);
 		eventRepository.addEvent(event2);
 		participant.addEvent(event1);
-		participant.addEvent(event2);
 		participantRepository.addParticipant(participant);
 		eventRepository.updateEvent(event1);
+		participant.addEvent(event2);
+		participantRepository.updateParticipant(participant);
 		eventRepository.updateEvent(event2);
 		GuiActionRunner.execute(() -> {
 			participantController.getAllParticipants();
@@ -222,7 +224,7 @@ public class ParticipantModelViewControllerIT extends AssertJSwingJUnitTestCase 
 
 		// Exercise
 		window.list(LIST_PARTICIPANT).selectItem(0);
-		window.list(LIST_EVENT).selectItem(0);
+		window.list(LIST_EVENT).selectItem(Pattern.compile(".*" + EVENT_NAME_1 + ".*"));
 		window.button(JButtonMatcher.withText(BTN_DELETE_PARTICIPANT)).click();
 
 		// Verify
