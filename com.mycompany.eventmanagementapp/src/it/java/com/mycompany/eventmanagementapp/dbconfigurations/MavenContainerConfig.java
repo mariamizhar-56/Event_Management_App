@@ -15,10 +15,7 @@ public class MavenContainerConfig implements DatabaseConfiguration {
 	private static final String DB_PASSWORD = "test";
 	
 	@Override
-	public void StartDatabaseConnection() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void StartDatabaseConnection() {}
 
 	@Override
 	public StandardServiceRegistry getServiceRegistry() {
@@ -31,7 +28,6 @@ public class MavenContainerConfig implements DatabaseConfiguration {
 
 	@Override
 	public MySQLContainer<?> GetMySQLContainer() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
