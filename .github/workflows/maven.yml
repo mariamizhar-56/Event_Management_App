@@ -81,7 +81,7 @@ jobs:
           ${{ runner.os }}-m2-
     
     - name: Run Integration Tests on Java ${{ matrix.java }}
-      run: xvfb-run mvn verify -Pintegration-test
+      run: xvfb-run mvn verify -Pintegration-test -Ddb.server=mvn
       working-directory: com.mycompany.eventmanagementapp
     
     - name: Archive Integration Test Reports and Site
