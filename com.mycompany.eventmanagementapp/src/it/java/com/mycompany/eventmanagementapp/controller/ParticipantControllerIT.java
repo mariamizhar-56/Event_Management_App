@@ -85,13 +85,15 @@ public class ParticipantControllerIT {
 	// Setup Database Config for Eclipse OR Maven
 	@BeforeClass
 	public static void configureDB() {
-		databaseConfig = DBConfigSetup.getDatabaseConfig();
-		databaseConfig.StartDatabaseConnection();
+//		databaseConfig = DBConfigSetup.getDatabaseConfig();
+//		databaseConfig.StartDatabaseConnection();
 	}
 
 	// Initialize mocks and set up Hibernate session factory and repository
 	@Before
 	public void setup() {
+		databaseConfig = DBConfigSetup.getDatabaseConfig();
+		databaseConfig.StartDatabaseConnection();
 		closeable = MockitoAnnotations.openMocks(this);
 		registry = databaseConfig.getServiceRegistry();
 		MetadataSources metadataSources = new MetadataSources(registry);

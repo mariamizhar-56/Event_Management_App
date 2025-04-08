@@ -30,6 +30,7 @@
 		<!-- Dependency Properties -->
 		<logback-classic-version>1.2.3</logback-classic-version>
 		<mysql-version>8.0.33</mysql-version>
+		<db.server>containers</db.server>
 		<mysql-testContainer-version>1.19.8</mysql-testContainer-version>
 		<hibernate-core-version>5.4.15.Final</hibernate-core-version>
 		<h2-version>1.4.200</h2-version>
@@ -549,21 +550,20 @@
 							<images>
 								<image>
 									<name>mysql:${mysql-version}</name>
+									<alias>mysql</alias>
 									<run>
 										<ports>
-											<port>3307:3306</port>
+											<port>3306:3306</port>
 										</ports>
 										<env>
 											<MYSQL_ROOT_PASSWORD>
 												${env-MYSQLROOTPASSWORD}</MYSQL_ROOT_PASSWORD>
 
 											<MYSQL_DATABASE>event_management_app</MYSQL_DATABASE>
+											<MYSQL_USER>test</MYSQL_USER>
+											<MYSQL_PASSWORD>test</MYSQL_PASSWORD>
 										</env>
-										<wait>
-											<log>${wait-log}</log>
-											<time>30000</time> <!-- Wait up to 30
-											seconds -->
-										</wait>
+									
 									</run>
 								</image>
 							</images>

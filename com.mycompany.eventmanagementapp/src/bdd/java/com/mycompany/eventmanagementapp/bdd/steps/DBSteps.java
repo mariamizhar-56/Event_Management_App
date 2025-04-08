@@ -81,11 +81,11 @@ public class DBSteps {
 
 	@BeforeAll
 	public static void configureDB() {
-		databaseConfig = DBConfigSetup.getDatabaseConfig();
-		databaseConfig.StartDatabaseConnection();
-		if (databaseConfig.GetMySQLContainer() != null) {
-			dbURL = databaseConfig.GetMySQLContainer().getJdbcUrl();
-		}
+//		databaseConfig = DBConfigSetup.getDatabaseConfig();
+//		databaseConfig.StartDatabaseConnection();
+//		if (databaseConfig.GetMySQLContainer() != null) {
+//			dbURL = databaseConfig.GetMySQLContainer().getJdbcUrl();
+//		}
 	}
 
 	@AfterAll
@@ -99,6 +99,11 @@ public class DBSteps {
 
 	@Before
 	public void setup() {
+		databaseConfig = DBConfigSetup.getDatabaseConfig();
+		databaseConfig.StartDatabaseConnection();
+		if (databaseConfig.GetMySQLContainer() != null) {
+			dbURL = databaseConfig.GetMySQLContainer().getJdbcUrl();
+		}
 		registry = databaseConfig.getServiceRegistry();
 		MetadataSources metadataSources = new MetadataSources(registry);
 		sessionFactory = metadataSources.buildMetadata().buildSessionFactory();

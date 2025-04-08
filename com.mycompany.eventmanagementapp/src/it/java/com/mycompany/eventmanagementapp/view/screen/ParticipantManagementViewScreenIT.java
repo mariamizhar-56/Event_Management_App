@@ -104,8 +104,8 @@ public class ParticipantManagementViewScreenIT extends AssertJSwingJUnitTestCase
 	// Setup Database Config for Eclipse OR Maven
 	@BeforeClass
 	public static void configureDB() {
-		databaseConfig = DBConfigSetup.getDatabaseConfig();
-		databaseConfig.StartDatabaseConnection();
+//		databaseConfig = DBConfigSetup.getDatabaseConfig();
+//		databaseConfig.StartDatabaseConnection();
 	}
 
 	// Tear down the session and stop the MySQL container after tests
@@ -120,6 +120,8 @@ public class ParticipantManagementViewScreenIT extends AssertJSwingJUnitTestCase
 	// Set up the UI and Repositories before each test
 	@Override
 	protected void onSetUp() throws Exception {
+		databaseConfig = DBConfigSetup.getDatabaseConfig();
+		databaseConfig.StartDatabaseConnection();
 		registry = databaseConfig.getServiceRegistry();
 		MetadataSources metadataSources = new MetadataSources(registry);
 		sessionFactory = metadataSources.buildMetadata().buildSessionFactory();

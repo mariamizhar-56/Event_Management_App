@@ -77,8 +77,8 @@ public class ParticipantControllerRaceConditionIT {
 	// Setup Database Config for Eclipse OR Maven
 	@BeforeClass
 	public static void configureDB() {
-		databaseConfig = DBConfigSetup.getDatabaseConfig();
-		databaseConfig.StartDatabaseConnection();
+//		databaseConfig = DBConfigSetup.getDatabaseConfig();
+//		databaseConfig.StartDatabaseConnection();
 	}
 
 	// Tear down the database after tests
@@ -94,6 +94,8 @@ public class ParticipantControllerRaceConditionIT {
 	// each test
 	@Before
 	public void setup() {
+		databaseConfig = DBConfigSetup.getDatabaseConfig();
+		databaseConfig.StartDatabaseConnection();
 		registry = databaseConfig.getServiceRegistry();
 		MetadataSources metadataSources = new MetadataSources(registry);
 		sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
