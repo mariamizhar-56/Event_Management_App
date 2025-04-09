@@ -6,7 +6,7 @@ public class DBConfigSetup {
 
 	public static DatabaseConfiguration getDatabaseConfig() {
 		String dbServer = System.getProperty("db.server");
-		if (dbServer.equals("mvn")) {
+		if ("mvn".equalsIgnoreCase(dbServer)) {
 			// To run on eclipse
 			databaseConfig = new MavenContainerConfig();
 
