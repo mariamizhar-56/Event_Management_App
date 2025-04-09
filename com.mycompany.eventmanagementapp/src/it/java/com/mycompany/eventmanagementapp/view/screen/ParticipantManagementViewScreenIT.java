@@ -19,7 +19,6 @@ package com.mycompany.eventmanagementapp.view.screen;
 import org.junit.Test;
 import java.time.LocalDate;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.hibernate.SessionFactory;
 import java.util.concurrent.TimeUnit;
@@ -117,19 +116,12 @@ public class ParticipantManagementViewScreenIT extends AssertJSwingJUnitTestCase
 			sessionFactory.close();
 		}
 	}
-	
-	@Before
-	public void setup() {
-		databaseConfig = DBConfigSetup.getDatabaseConfig();
-		databaseConfig.StartDatabaseConnection();
-
-	}
 
 	// Set up the UI and Repositories before each test
 	@Override
 	protected void onSetUp() throws Exception {
-//		databaseConfig = DBConfigSetup.getDatabaseConfig();
-//		databaseConfig.StartDatabaseConnection();
+		databaseConfig = DBConfigSetup.getDatabaseConfig();
+		databaseConfig.StartDatabaseConnection();
 		registry = databaseConfig.getServiceRegistry();
 		MetadataSources metadataSources = new MetadataSources(registry);
 		sessionFactory = metadataSources.buildMetadata().buildSessionFactory();

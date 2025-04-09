@@ -2,6 +2,10 @@ package com.mycompany.eventmanagementapp.dbconfigurations;
 
 import static org.awaitility.Awaitility.await;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -26,6 +30,21 @@ public class MavenContainerConfig implements DatabaseConfiguration {
 		int attempt = 0;
 		while (attempt < MAX_RETRIES) {
 			try {
+				// Wait until MySQL is reachable and metadata is accessible
+				await().atMost(RETRY_DELAY_SECONDS, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> {
+					try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USERNAME, DB_PASSWORD)) {
+						if (conn.isValid(2)) {
+							try (ResultSet rs = conn.getMetaData().getTables(null, null, null,
+									new String[] { "TABLE" })) {
+								return rs != null;
+							}
+						}
+						return false;
+					} catch (SQLException e) {
+						System.out.println("Waiting for DB readiness: " + e.getMessage());
+						return false;
+					}
+				});
 
 				// Hibernate registry build
 				registry = new StandardServiceRegistryBuilder().configure(HIBERNATE_XML)
@@ -33,7 +52,7 @@ public class MavenContainerConfig implements DatabaseConfiguration {
 						.applySetting("hibernate.connection.username", DB_USERNAME)
 						.applySetting("hibernate.connection.password", DB_PASSWORD).build();
 
-				System.out.println("✅ Connected to MySQL successfully.");
+				System.out.println("✅ Connected to MySQL successfully and Hibernate registry initialized.");
 				break;
 
 			} catch (Exception e) {
