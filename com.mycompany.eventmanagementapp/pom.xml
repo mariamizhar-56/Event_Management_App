@@ -563,7 +563,10 @@
 											<MYSQL_USER>test</MYSQL_USER>
 											<MYSQL_PASSWORD>test</MYSQL_PASSWORD>
 										</env>
-									
+										<wait>
+											<log>ready for connections</log>
+											<time>60000</time> <!-- wait max 60s -->
+										</wait>
 									</run>
 								</image>
 							</images>
