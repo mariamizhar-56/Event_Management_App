@@ -24,6 +24,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.junit.BeforeClass;
 
 import com.mycompany.eventmanagementapp.model.EventModel;
 import com.mycompany.eventmanagementapp.model.ParticipantModel;
@@ -81,11 +82,6 @@ public class DBSteps {
 
 	@BeforeAll
 	public static void configureDB() {
-//		databaseConfig = DBConfigSetup.getDatabaseConfig();
-//		databaseConfig.StartDatabaseConnection();
-//		if (databaseConfig.GetMySQLContainer() != null) {
-//			dbURL = databaseConfig.GetMySQLContainer().getJdbcUrl();
-//		}
 	}
 
 	@AfterAll

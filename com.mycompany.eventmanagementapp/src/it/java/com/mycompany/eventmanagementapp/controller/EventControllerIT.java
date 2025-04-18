@@ -79,11 +79,8 @@ public class EventControllerIT {
 	
 	private static final String PARTICIPANT_EMAIL = "John@gmail.com";
 
-	// Setup Database Config for Eclipse OR Maven
 	@BeforeClass
 	public static void configureDB() {
-//		databaseConfig = DBConfigSetup.getDatabaseConfig();
-//		databaseConfig.StartDatabaseConnection();
 	}
 
 	// Initialize mocks and set up Hibernate session factory and repository

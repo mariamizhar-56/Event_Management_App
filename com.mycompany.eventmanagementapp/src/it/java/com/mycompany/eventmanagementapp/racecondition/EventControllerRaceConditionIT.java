@@ -21,6 +21,7 @@ package com.mycompany.eventmanagementapp.racecondition;
 
 import org.junit.Test;
 import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.mockito.Mock;
 import java.time.LocalDate;
@@ -30,6 +31,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 import org.hibernate.SessionFactory;
 import java.util.concurrent.TimeUnit;
+import org.mockito.MockitoAnnotations;
 import org.hibernate.boot.MetadataSources;
 import static org.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,6 +54,8 @@ public class EventControllerRaceConditionIT {
 
 	private static StandardServiceRegistry registry;
 
+	private AutoCloseable closeable;
+
 	@Mock
 	private EventManagementViewScreen eventView;
 
@@ -69,11 +73,8 @@ public class EventControllerRaceConditionIT {
 
 	private static final String EVENT_LOCATION = "Florence";
 
-	// Setup Database Config for Eclipse OR Maven
 	@BeforeClass
 	public static void configureDB() {
-//		databaseConfig = DBConfigSetup.getDatabaseConfig();
-//		databaseConfig.StartDatabaseConnection();
 	}
 
 	// Tear down the database
@@ -89,6 +90,7 @@ public class EventControllerRaceConditionIT {
 	// each test
 	@Before
 	public void setup() {
+		closeable = MockitoAnnotations.openMocks(this);
 		databaseConfig = DBConfigSetup.getDatabaseConfig();
 		databaseConfig.StartDatabaseConnection();
 		registry = databaseConfig.getServiceRegistry();
@@ -96,6 +98,12 @@ public class EventControllerRaceConditionIT {
 		sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
 		eventRepository = new EventMySqlRepository(sessionFactory);
 		eventController = new EventController(eventView, eventRepository);
+	}
+
+	// Close mocks after each test
+	@After
+	public void releaseMocks() throws Exception {
+		closeable.close();
 	}
 
 	// Test Add Event Concurrent

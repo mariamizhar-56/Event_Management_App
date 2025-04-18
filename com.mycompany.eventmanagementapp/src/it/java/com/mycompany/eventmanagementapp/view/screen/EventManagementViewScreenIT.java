@@ -89,11 +89,8 @@ public class EventManagementViewScreenIT extends AssertJSwingJUnitTestCase {
 
 	private static final String LIST_EVENT = "eventList";
 
-	// Setup Database Config for Eclipse OR Maven
 	@BeforeClass
 	public static void configureDB() {
-//		databaseConfig = DBConfigSetup.getDatabaseConfig();
-//		databaseConfig.StartDatabaseConnection();
 	}
 
 	// Tear down the session and stop the MySQL container after tests
