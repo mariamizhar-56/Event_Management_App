@@ -21,7 +21,6 @@ package com.mycompany.eventmanagementapp.mvc;
 import org.junit.Test;
 import java.time.LocalDate;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.hibernate.SessionFactory;
 import java.util.concurrent.TimeUnit;
 import org.hibernate.boot.MetadataSources;
@@ -76,10 +75,6 @@ public class EventModelViewControllerIT extends AssertJSwingJUnitTestCase {
 	private static final String TXT_EVENT_DATE = "txtEventDate";
 
 	private static final String LIST_EVENT = "eventList";
-
-	@BeforeClass
-	public static void configureDB() {
-	}
 
 	// Tear down the session
 	@AfterClass

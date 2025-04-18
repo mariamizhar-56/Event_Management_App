@@ -19,7 +19,6 @@ package com.mycompany.eventmanagementapp.view.screen;
 import org.junit.Test;
 import java.time.LocalDate;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.hibernate.SessionFactory;
 import java.util.concurrent.TimeUnit;
 import org.hibernate.boot.MetadataSources;
@@ -88,10 +87,6 @@ public class EventManagementViewScreenIT extends AssertJSwingJUnitTestCase {
 	private static final String TXT_EVENT_ERROR = "lblError";
 
 	private static final String LIST_EVENT = "eventList";
-
-	@BeforeClass
-	public static void configureDB() {
-	}
 
 	// Tear down the session and stop the MySQL container after tests
 	@AfterClass

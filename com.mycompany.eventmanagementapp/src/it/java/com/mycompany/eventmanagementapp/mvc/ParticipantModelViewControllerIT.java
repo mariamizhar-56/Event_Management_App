@@ -22,7 +22,6 @@ package com.mycompany.eventmanagementapp.mvc;
 import org.junit.Test;
 import java.time.LocalDate;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import java.util.regex.Pattern;
 import org.hibernate.SessionFactory;
 import java.util.concurrent.TimeUnit;
@@ -94,10 +93,6 @@ public class ParticipantModelViewControllerIT extends AssertJSwingJUnitTestCase 
 	private static final String LIST_PARTICIPANT = "participantList";
 
 	private static final String LIST_EVENT = "eventListForParticipant";
-
-	@BeforeClass
-	public static void configureDB() {
-	}
 
 	// Tear down the session and stop the MySQL container after the tests
 	@AfterClass

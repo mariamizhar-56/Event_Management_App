@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.mockito.Mock;
 import java.time.LocalDate;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 import org.hibernate.SessionFactory;
@@ -77,10 +76,6 @@ public class ParticipantControllerRaceConditionIT {
 	private static final String PARTICIPANT_NAME_2 = "Martin";
 
 	private static final String PARTICIPANT_EMAIL = "John@gmail.com";
-
-	@BeforeClass
-	public static void configureDB() {
-	}
 
 	// Tear down the database after tests
 	@AfterClass

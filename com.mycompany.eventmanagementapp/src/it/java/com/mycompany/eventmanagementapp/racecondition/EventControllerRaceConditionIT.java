@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.mockito.Mock;
 import java.time.LocalDate;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 import org.hibernate.SessionFactory;
@@ -72,10 +71,6 @@ public class EventControllerRaceConditionIT {
 	private static final LocalDate EVENT_DATE = LocalDate.now().plusDays(10);
 
 	private static final String EVENT_LOCATION = "Florence";
-
-	@BeforeClass
-	public static void configureDB() {
-	}
 
 	// Tear down the database
 	@AfterClass

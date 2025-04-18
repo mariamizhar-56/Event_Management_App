@@ -23,7 +23,6 @@ import org.junit.After;
 import org.mockito.Mock;
 import org.junit.Before;
 import java.time.LocalDate;
-import org.junit.BeforeClass;
 import org.hibernate.SessionFactory;
 import org.mockito.MockitoAnnotations;
 import static java.util.Arrays.asList;
@@ -81,10 +80,6 @@ public class ParticipantControllerIT {
 	private static final String PARTICIPANT_NAME_2 = "Martin";
 
 	private static final String PARTICIPANT_EMAIL = "John@gmail.com";
-
-	@BeforeClass
-	public static void configureDB() {
-	}
 
 	// Initialize mocks and set up Hibernate session factory and repository
 	@Before

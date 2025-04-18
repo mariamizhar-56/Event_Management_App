@@ -19,12 +19,10 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import org.hibernate.Transaction;
 import io.cucumber.java.AfterAll;
-import io.cucumber.java.BeforeAll;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.junit.BeforeClass;
 
 import com.mycompany.eventmanagementapp.model.EventModel;
 import com.mycompany.eventmanagementapp.model.ParticipantModel;
@@ -79,10 +77,6 @@ public class DBSteps {
 	private EventModel firstEvent;
 	
 	private ParticipantModel secondParticipant;
-
-	@BeforeAll
-	public static void configureDB() {
-	}
 
 	@AfterAll
 	public static void shutdownDB() {
