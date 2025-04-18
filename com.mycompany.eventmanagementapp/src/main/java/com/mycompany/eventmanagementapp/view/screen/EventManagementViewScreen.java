@@ -331,8 +331,8 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 		SwingUtilities.invokeLater(() -> {
 			eventListModel.addElement(event);
 			clearErrorLabel();
+			resetFormAndClearEventList();
 		});
-		resetFormAndClearEventList();
 	}
 
 	@Override
@@ -348,8 +348,8 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 		SwingUtilities.invokeLater(() -> {
 			eventListModel.removeElement(event);
 			clearErrorLabel();
+			resetFormAndClearEventList();
 		});
-		resetFormAndClearEventList();
 	}
 
 	@Override
@@ -363,8 +363,8 @@ public class EventManagementViewScreen extends JFrame implements EventManagement
 				return;
 			eventListModel.set(index, event);
 			clearErrorLabel();
+			resetFormAndClearEventList();
 		});
-		resetFormAndClearEventList();
 	}
 
 	public void setParticipantView(ParticipantManagementViewScreen participantView) {

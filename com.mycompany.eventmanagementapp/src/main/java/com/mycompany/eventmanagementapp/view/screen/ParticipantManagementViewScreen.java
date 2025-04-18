@@ -346,8 +346,8 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 			participantListModel.addElement(participant);
 			clearParticipantErrorLabel();
 			getAllEventsForParticipantScreen();
+			clearParticipantFieldsAndButtons();
 		});
-		clearParticipantFieldsAndButtons();
 	}
 
 	@Override
@@ -357,8 +357,8 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 			clearParticipantErrorLabel();
 			getAllEventsForParticipantScreen();
 			participantList.clearSelection();
+			clearParticipantFieldsAndButtons();
 		});
-		clearParticipantFieldsAndButtons();
 	}
 
 	@Override
@@ -374,8 +374,8 @@ public class ParticipantManagementViewScreen extends JFrame implements Participa
 			clearParticipantErrorLabel();
 			getAllEventsForParticipantScreen();
 			participantList.clearSelection();
+			clearParticipantFieldsAndButtons();
 		});
-		clearParticipantFieldsAndButtons();
 	}
 
 	@Override
