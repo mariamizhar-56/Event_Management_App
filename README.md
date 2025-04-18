@@ -1,2 +1,11 @@
 # Event_Management_App
 [![Java CI with Maven - Multi-Version Unit, Integration Testing and E2E with Coverage](https://github.com/mariamizhar-56/Event_Management_App/actions/workflows/maven.yml/badge.svg)](https://github.com/mariamizhar-56/Event_Management_App/actions/workflows/maven.yml)
+[![Java CI with Maven - Unit Testing with Coverage on Windows and macOS](https://github.com/mariamizhar-56/Event_Management_App/actions/workflows/maven_win_mac.yml/badge.svg)](https://github.com/mariamizhar-56/Event_Management_App/actions/workflows/maven_win_mac.yml)
+[![Java CI with Maven, Docker and SonarCloud in Linux](https://github.com/mariamizhar-56/Event_Management_App/actions/workflows/maven_Sonar.yml/badge.svg)](https://github.com/mariamizhar-56/Event_Management_App/actions/workflows/maven_Sonar.yml)
+[![Coverage Status](https://coveralls.io/repos/github/mariamizhar-56/Event_Management_App/badge.svg)](https://coveralls.io/github/mariamizhar-56/Event_Management_App)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=mariamizhar-56_Event_Management_App&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=mariamizhar-56_Event_Management_App)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mariamizhar-56_Event_Management_App&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=mariamizhar-56_Event_Management_App)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=mariamizhar-56_Event_Management_App&metric=bugs)](https://sonarcloud.io/summary/new_code?id=mariamizhar-56_Event_Management_App)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=mariamizhar-56_Event_Management_App&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=mariamizhar-56_Event_Management_App)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mariamizhar-56_Event_Management_App&metric=coverage)](https://sonarcloud.io/summary/new_code?id=mariamizhar-56_Event_Management_App)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=mariamizhar-56_Event_Management_App&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=mariamizhar-56_Event_Management_App)
