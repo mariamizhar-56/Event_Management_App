@@ -35,7 +35,6 @@ package com.mycompany.eventmanagementapp;
 
 import picocli.CommandLine;
 import java.awt.EventQueue;
-import javax.swing.UIManager;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Command;
 import org.hibernate.SessionFactory;
@@ -43,7 +42,6 @@ import java.util.concurrent.Callable;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.boot.MetadataSources;
 import org.apache.logging.log4j.LogManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
