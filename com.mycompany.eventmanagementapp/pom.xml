@@ -82,7 +82,7 @@
 		<!-- Disable rule for "Tests should include assertions" on specific
 		tests -->
 		<sonar.issue.ignore.multicriteria.e13.ruleKey>
-			squid:S2699
+			java:S2699
 		</sonar.issue.ignore.multicriteria.e13.ruleKey>
 		<sonar.issue.ignore.multicriteria.e13.resourceKey>
 			**/*ViewScreenTest.java
@@ -364,7 +364,7 @@
 												<limit>
 													<counter>LINE</counter>
 													<value>COVEREDRATIO</value>
-													<minimum>0.50</minimum>
+													<minimum>0.80</minimum>
 												</limit>
 											</limits>
 										</rule>
@@ -460,7 +460,7 @@
 							<mutators>
 								<mutator>DEFAULTS</mutator>
 							</mutators>
-							<mutationThreshold>50</mutationThreshold>
+							<mutationThreshold>80</mutationThreshold>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -628,7 +628,7 @@
 												<limit>
 													<counter>LINE</counter>
 													<value>COVEREDRATIO</value>
-													<minimum>0.50</minimum>
+													<minimum>0.80</minimum>
 												</limit>
 											</limits>
 										</rule>

@@ -63,7 +63,7 @@ public class EventManagementApp implements Callable<Void> {
 	 * command line option "--mysql-DB_URL".
 	 */
 	@Option(names = { "--mysql-DB_URL" }, description = "mysql DB_URL ")
-	private String url = "jdbc:mysql://localhost:3307/event_management_app";
+	private String url = "jdbc:mysql://localhost:3306/event_management_app";
 
 	/**
 	 * The username for the MySQL database. This is set via the command line option
@@ -86,13 +86,6 @@ public class EventManagementApp implements Callable<Void> {
 	private StandardServiceRegistry registry;
 
 	public static void main(String[] args) {
-		try {
-			// Sets the look and feel of the UI to GTK, if available.
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) {
-			LOGGER.error("context", e);
-		}
 		// Initializes the application using picocli's CommandLine to parse command-line
 		// arguments.
 		new CommandLine(new EventManagementApp()).execute(args);
