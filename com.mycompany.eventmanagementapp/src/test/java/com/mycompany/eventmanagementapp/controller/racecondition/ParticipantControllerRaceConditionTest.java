@@ -114,12 +114,10 @@ public class ParticipantControllerRaceConditionTest {
 	@Test
 	public void testAddParticipantToEventConcurrent() {
 		// Create a fake in-memory database for events and participants
-		List<EventModel> events = new ArrayList<>();
 		List<ParticipantModel> participants = new ArrayList<>();
 
 		// Create a new event
 		EventModel event = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
-		events.add(event);
 
 		// Create a new participant
 		ParticipantModel newParticipant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
@@ -167,12 +165,10 @@ public class ParticipantControllerRaceConditionTest {
 	@Test
 	public void testAddExistingParticipantToEventConcurrent() {
 		// Create a fake in-memory database for events and participants
-		List<EventModel> events = new ArrayList<>();
 		List<ParticipantModel> participants = new ArrayList<>();
 
 		// Create a new event
 		EventModel event = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
-		events.add(event);
 
 		// Create an existing participant
 		ParticipantModel existingParticipant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME,
@@ -265,14 +261,11 @@ public class ParticipantControllerRaceConditionTest {
 	
 	@Test
 	public void testDeleteParticipantConcurrentWhenMultipleEventsLinked() {
-	    List<EventModel> events = new ArrayList<>();
 	    List<ParticipantModel> participants = new ArrayList<>();
 
 	    // Create two events and a participant linked to both
 	    EventModel event1 = new EventModel(EVENT_ID, EVENT_NAME, EVENT_DATE, EVENT_LOCATION);
 	    EventModel event2 = new EventModel(EVENT_ID_2, EVENT_NAME_2, EVENT_DATE_2, EVENT_LOCATION_2);
-	    events.add(event1);
-	    events.add(event2);
 
 	    ParticipantModel participant = new ParticipantModel(PARTICIPANT_ID, PARTICIPANT_NAME, PARTICIPANT_EMAIL);
 	    participant.addEvent(event1);  // Link participant to event1
