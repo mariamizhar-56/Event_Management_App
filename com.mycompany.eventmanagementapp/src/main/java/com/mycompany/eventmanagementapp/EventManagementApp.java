@@ -52,7 +52,7 @@ import com.mycompany.eventmanagementapp.view.screen.EventManagementViewScreen;
 import com.mycompany.eventmanagementapp.repository.mysql.ParticipantMySqlRepository;
 import com.mycompany.eventmanagementapp.view.screen.ParticipantManagementViewScreen;
 
-// Main class for the Event_Management Swing Application
+// Main class for the Event Management Swing Application
 @Command(mixinStandardHelpOptions = true)
 public class EventManagementApp implements Callable<Void> {
 
